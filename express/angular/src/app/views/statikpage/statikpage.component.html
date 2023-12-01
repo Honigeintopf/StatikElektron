@@ -1,0 +1,45 @@
+<div class="container">
+  <div>
+    <label for="pdfName">PDF Name:</label>
+    <input type="text" id="pdfName" [(ngModel)]="newPdfName" />
+    <button mat-icon-button (click)="addPdf(newPdfName)">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+  <button mat-icon-button (click)="generateTableOfContents()">
+    <mat-icon>picture_as_pdf</mat-icon>
+  </button>
+  <button mat-icon-button (click)="toggleDragAndDrop()">
+    <mat-icon>drag_indicator</mat-icon>
+  </button>
+
+  <!-- Use *ngIf to conditionally show/hide the drag-and-drop section -->
+  <div *ngIf="isDragAndDropEnabled">
+    <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        {{ pdf.name }}
+      </div>
+    </div>
+  </div>
+  <div>
+    <label for="pdfFile">Select PDF File:</label>
+    <input
+      type="file"
+      id="pdfFile"
+      (change)="onFileSelected($event)"
+      accept=".pdf"
+    />
+    <button mat-flat-button (click)="uploadPdf()">Upload PDF</button>
+  </div>
+  <!-- Show the list without drag-and-drop if isDragAndDropEnabled is false -->
+  <div *ngIf="!isDragAndDropEnabled">
+    <div class="example-list">
+      <div class="example-box" *ngFor="let pdf of pdfs">
+        <button mat-flat-button (click)="handleButtonClick(pdf)">
+          {{ pdf.name }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
