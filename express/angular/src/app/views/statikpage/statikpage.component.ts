@@ -21,22 +21,17 @@ export class StatikpageComponent {
     this.selectedFile = event.target.files[0];
   }
   uploadPdf() {
-    if (this.selectedFile) {
-      this.pdfService.uploadPdf(this.selectedFile).subscribe(
-        (response: any) => {
-          console.log('File uploaded successfully!', response);
+    const filePath = '/path/to/your/file.pdf';
+    const name = 'ExamplePDF';
 
-          // Optionally, you can do something with the response, e.g., display a success message.
-        },
-        (error) => {
-          console.error('Error uploading file:', error);
-
-          // Optionally, you can handle errors, e.g., display an error message.
-        }
-      );
-    } else {
-      console.warn('No file selected for upload.');
-    }
+    this.pdfService.uploadPdf(filePath, name).subscribe(
+      (response) => {
+        console.log('PDF created:', response);
+      },
+      (error) => {
+        console.error('Error creating PDF:', error);
+      }
+    );
   }
 
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {

@@ -8,15 +8,14 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
   providedIn: 'root',
 })
 export class PdfService {
-  private apiUrl = 'http://localhost:3000'; // Adjust the URL based on your server configuration
+  private apiUrl = 'http://localhost:3000/api/pdf/create'; // Adjust the URL based on your server configuration
 
   constructor(private http: HttpClient) {}
 
-  uploadPdf(file: File) {
-    const formData = new FormData();
-    formData.append('pdf', file);
+  uploadPdf(filePath: string, name: string) {
+    const requestData = { name, filePath };
 
-    return this.http.post(`${this.apiUrl}/upload`, formData);
+    return this.http.post(`${this.apiUrl}`, requestData);
   }
   generateTableOfContents(
     pdfs: {

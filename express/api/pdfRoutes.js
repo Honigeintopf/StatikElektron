@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/create", async (req, res) => {
   try {
     const { name, filePath } = req.body;
+    console.log(req.body);
     const newPdf = await PdfModel.createNewPdf(name, filePath);
     res.json(newPdf);
   } catch (error) {
