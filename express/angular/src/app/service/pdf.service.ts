@@ -12,10 +12,13 @@ export class PdfService {
 
   constructor(private http: HttpClient) {}
 
-  uploadPdf(filePath: string, name: string) {
-    const requestData = { name, filePath };
+  uploadPdf(file: File, filePath: string, name: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('name', name);
+    formData.append('filePath', filePath);
 
-    return this.http.post(`${this.apiUrl}`, requestData);
+    return this.http.post(`${this.apiUrl}`, formData);
   }
   generateTableOfContents(
     pdfs: {

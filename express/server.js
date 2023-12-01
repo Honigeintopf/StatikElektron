@@ -4,6 +4,7 @@ module.exports = () => {
   const express = require("express");
   const path = require("path");
   const bodyParser = require("body-parser");
+  const multer = require("multer");
 
   const app = express();
 
@@ -36,9 +37,23 @@ module.exports = () => {
     express.static(path.join(__dirname, "angular/dist/statikgenerator"))
   );
 
+  // Configure Multer for file uploads
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, "/uploads")); // Specify the destination folder
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + "-" + file.originalname); // Use a unique filename
+    },
+  });
+
+  const upload = multer({ storage: storage });
+
   // Load API routes
   const pdfRoutes = require("./api/pdfRoutes");
-  app.use("/api/pdf", pdfRoutes);
+
+  // Use Multer middleware for file uploads in the /api/pdf/create route
+  app.use("/api/pdf", upload.single("file"), pdfRoutes);
 
   const PORT = process.env.PORT || 3000;
 

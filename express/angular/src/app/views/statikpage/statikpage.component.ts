@@ -23,8 +23,11 @@ export class StatikpageComponent {
   uploadPdf() {
     const filePath = '/path/to/your/file.pdf';
     const name = 'ExamplePDF';
-
-    this.pdfService.uploadPdf(filePath, name).subscribe(
+    if (!this.selectedFile) {
+      console.error('No file selected.');
+      return;
+    }
+    this.pdfService.uploadPdf(this.selectedFile, filePath, name).subscribe(
       (response) => {
         console.log('PDF created:', response);
       },
