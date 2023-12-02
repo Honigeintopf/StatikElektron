@@ -40,6 +40,17 @@ export class StatikpageComponent {
       );
   }
 
+  getPdfbyProject() {
+    this.pdfService.getPdfbyProject(this.projectName).subscribe(
+      (response) => {
+        console.log('PDFs of project:', response);
+      },
+      (error) => {
+        console.error('Error creating PDF:', error);
+      }
+    );
+  }
+
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {
     const newPdf = { name, subpoints };
     this.pdfs.push(newPdf);

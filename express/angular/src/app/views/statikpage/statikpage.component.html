@@ -32,6 +32,12 @@
     />
     <button mat-flat-button (click)="uploadPdf()">Upload PDF</button>
   </div>
+
+  <div>
+    <label>Get PDF Files</label>
+    <button mat-flat-button (click)="getPdfbyProject()">Get PDF</button>
+  </div>
+
   <!-- Show the list without drag-and-drop if isDragAndDropEnabled is false -->
   <div *ngIf="!isDragAndDropEnabled">
     <div class="example-list">

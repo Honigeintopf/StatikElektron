@@ -25,4 +25,13 @@ PdfModel.getAllPdfs = async () => {
   return PdfModel.findAll();
 };
 
+PdfModel.getAllPdfsByProjectName = async (projectName) => {
+  const files = await PdfModel.findAll({
+    where: {
+      projectName: projectName,
+    },
+  });
+  return files;
+};
+
 module.exports = PdfModel;

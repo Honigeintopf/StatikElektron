@@ -29,4 +29,19 @@ router.get("/all", async (req, res) => {
   }
 });
 
+// Add this route after your existing code
+
+router.get("/files/:projectName", async (req, res) => {
+  try {
+    const projectName = req.params.projectName;
+
+    const files = await PdfModel.getAllPdfsByProjectName(projectName);
+
+    res.json({ files });
+  } catch (error) {
+    console.error("Error retrieving files:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
