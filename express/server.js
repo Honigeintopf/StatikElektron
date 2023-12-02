@@ -53,7 +53,7 @@ module.exports = () => {
       cb(null, uploadFolderPath); // Use the desktop 'uploads' folder
     },
     filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.originalname); // Use a unique filename
+      cb(null, `${file.originalname}`); // Use a unique filename
     },
   });
 

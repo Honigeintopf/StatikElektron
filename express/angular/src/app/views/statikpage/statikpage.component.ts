@@ -16,25 +16,28 @@ export class StatikpageComponent {
   }[] = [];
   isDragAndDropEnabled: boolean = true;
   selectedFile: File | undefined;
+  name: string = 'Test';
+  projectName: string = 'Statik1';
   constructor(private pdfService: PdfService) {}
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
   }
   uploadPdf() {
-    const filePath = '/path/to/your/file.pdf';
-    const name = 'ExamplePDF';
     if (!this.selectedFile) {
       console.error('No file selected.');
       return;
     }
-    this.pdfService.uploadPdf(this.selectedFile, name).subscribe(
-      (response) => {
-        console.log('PDF created:', response);
-      },
-      (error) => {
-        console.error('Error creating PDF:', error);
-      }
-    );
+
+    this.pdfService
+      .uploadPdf(this.selectedFile, this.name, this.projectName)
+      .subscribe(
+        (response) => {
+          console.log('PDF created:', response);
+        },
+        (error) => {
+          console.error('Error creating PDF:', error);
+        }
+      );
   }
 
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {

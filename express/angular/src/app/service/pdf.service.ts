@@ -12,12 +12,15 @@ export class PdfService {
 
   constructor(private http: HttpClient) {}
 
-  uploadPdf(file: File, name: string) {
+  uploadPdf(file: File, name: string, projectName: string) {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('name', name);
+    const newFileName = `${projectName}-${file.name}`;
 
-    return this.http.post(`${this.apiUrl}`, formData);
+    formData.append('file', file, newFileName);
+    formData.append('name', name);
+    formData.append('projectName', projectName);
+
+    return this.http.post(this.apiUrl, formData);
   }
   generateTableOfContents(
     pdfs: {

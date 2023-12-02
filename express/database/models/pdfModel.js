@@ -11,11 +11,14 @@ const PdfModel = sequelize.define("PdfModel", {
   filePath: {
     type: DataTypes.STRING,
   },
+  projectName: {
+    type: DataTypes.STRING,
+  },
 });
 
 // Methods for creating and retrieving data
-PdfModel.createNewPdf = async (name, filePath) => {
-  return PdfModel.create({ name, filePath });
+PdfModel.createNewPdf = async (name, filePath, projectName) => {
+  return PdfModel.create({ name, filePath, projectName });
 };
 
 PdfModel.getAllPdfs = async () => {
