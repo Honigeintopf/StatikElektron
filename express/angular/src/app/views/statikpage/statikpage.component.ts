@@ -17,7 +17,6 @@ export class StatikpageComponent implements OnInit {
   }[] = [];
   isDragAndDropEnabled: boolean = true;
   selectedFile: File | undefined;
-  name: string = 'Test';
   projectName: string = 'Statik1';
   constructor(private pdfService: PdfService) {}
 
