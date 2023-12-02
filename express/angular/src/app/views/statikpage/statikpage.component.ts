@@ -27,7 +27,7 @@ export class StatikpageComponent {
       console.error('No file selected.');
       return;
     }
-    this.pdfService.uploadPdf(this.selectedFile, filePath, name).subscribe(
+    this.pdfService.uploadPdf(this.selectedFile, name).subscribe(
       (response) => {
         console.log('PDF created:', response);
       },

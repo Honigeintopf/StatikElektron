@@ -8,8 +8,8 @@ const router = express.Router();
 // Route to create a new PDF record
 router.post("/create", async (req, res) => {
   try {
-    const { name, filePath } = req.body;
-    console.log(req.body);
+    const { name } = req.body;
+    const filePath = req.file.path;
     const newPdf = await PdfModel.createNewPdf(name, filePath);
     res.json(newPdf);
   } catch (error) {

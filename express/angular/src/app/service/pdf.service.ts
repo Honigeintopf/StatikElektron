@@ -12,11 +12,10 @@ export class PdfService {
 
   constructor(private http: HttpClient) {}
 
-  uploadPdf(file: File, filePath: string, name: string) {
+  uploadPdf(file: File, name: string) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('name', name);
-    formData.append('filePath', filePath);
 
     return this.http.post(`${this.apiUrl}`, formData);
   }

@@ -5,6 +5,7 @@ module.exports = () => {
   const path = require("path");
   const bodyParser = require("body-parser");
   const multer = require("multer");
+  const fs = require("fs");
 
   const app = express();
 
@@ -37,10 +38,19 @@ module.exports = () => {
     express.static(path.join(__dirname, "angular/dist/statikgenerator"))
   );
 
+  // Specify the destination folder on the desktop
+  const desktopPath = path.join(require("os").homedir(), "Desktop");
+  const uploadFolderPath = path.join(desktopPath, "allPdfUploads");
+
+  // Create the 'uploads' folder if it doesn't exist
+  if (!fs.existsSync(uploadFolderPath)) {
+    fs.mkdirSync(uploadFolderPath);
+  }
+
   // Configure Multer for file uploads
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, "/uploads")); // Specify the destination folder
+      cb(null, uploadFolderPath); // Use the desktop 'uploads' folder
     },
     filename: (req, file, cb) => {
       cb(null, Date.now() + "-" + file.originalname); // Use a unique filename
