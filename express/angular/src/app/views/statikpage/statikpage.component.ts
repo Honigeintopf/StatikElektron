@@ -10,7 +10,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 export class StatikpageComponent implements OnInit {
   newPdfName: string = '';
   pdfs: {
-    id: number;
+    id: string;
     name: string;
     file?: string;
     subpoints?: { name: string; file: string }[];
@@ -35,14 +35,14 @@ export class StatikpageComponent implements OnInit {
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
   }
-  uploadPdf(pdfID: number) {
+  uploadPdf(pdfID: string) {
     if (!this.selectedFile) {
       console.error('No file selected.');
       return;
     }
 
     this.pdfService
-      .uploadPdf(this.selectedFile, this.name, this.projectName)
+      .uploadPdf(this.selectedFile, pdfID, this.projectName)
       .subscribe(
         (response) => {
           console.log('PDF created:', response);

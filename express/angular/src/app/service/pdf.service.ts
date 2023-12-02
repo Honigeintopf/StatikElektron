@@ -13,12 +13,12 @@ export class PdfService {
 
   constructor(private http: HttpClient) {}
 
-  uploadPdf(file: File, name: string, projectName: string): Observable<any> {
+  uploadPdf(file: File, id: string, projectName: string): Observable<any> {
     const formData = new FormData();
     const newFileName = `${projectName}-${file.name}`;
 
     formData.append('file', file, newFileName);
-    formData.append('name', name);
+    formData.append('id', id);
     formData.append('projectName', projectName);
     const createEndpoint = `${this.apiUrl}/upload`;
 

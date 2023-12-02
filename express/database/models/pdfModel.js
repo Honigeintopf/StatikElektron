@@ -21,8 +21,8 @@ PdfModel.createNewPdf = async (name, projectName) => {
   return PdfModel.create({ name, projectName });
 };
 
-PdfModel.uploadPDF = async (name, filePath, projectName) => {
-  return PdfModel.create({ name, filePath, projectName });
+PdfModel.uploadPDF = async (id, filePath, projectName) => {
+  return PdfModel.update({ filePath }, { where: { id, projectName } });
 };
 
 PdfModel.getAllPdfs = async () => {
