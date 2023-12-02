@@ -17,7 +17,11 @@ const PdfModel = sequelize.define("PdfModel", {
 });
 
 // Methods for creating and retrieving data
-PdfModel.createNewPdf = async (name, filePath, projectName) => {
+PdfModel.createNewPdf = async (name, projectName) => {
+  return PdfModel.create({ name, projectName });
+};
+
+PdfModel.uploadPDF = async (name, filePath, projectName) => {
   return PdfModel.create({ name, filePath, projectName });
 };
 

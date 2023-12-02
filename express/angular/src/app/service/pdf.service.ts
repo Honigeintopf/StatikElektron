@@ -20,7 +20,7 @@ export class PdfService {
     formData.append('file', file, newFileName);
     formData.append('name', name);
     formData.append('projectName', projectName);
-    const createEndpoint = `${this.apiUrl}/create`;
+    const createEndpoint = `${this.apiUrl}/upload`;
 
     return this.http.post(createEndpoint, formData);
   }
@@ -30,6 +30,12 @@ export class PdfService {
     const files = `${this.apiUrl}/files/${projectName}`;
     return this.http.get(files);
   }
+
+  createPDF(name: string, projectName: string): Observable<any> {
+    const createEndpoint = `${this.apiUrl}/create`;
+    return this.http.post(createEndpoint, { name, projectName });
+  }
+
   generateTableOfContents(
     pdfs: {
       name: string;

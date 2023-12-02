@@ -6,11 +6,22 @@ const PdfModel = require("../database/models/pdfModel");
 const router = express.Router();
 
 // Route to create a new PDF record
-router.post("/create", async (req, res) => {
+router.post("/upload", async (req, res) => {
   try {
     const { name, projectName } = req.body;
     const filePath = req.file.path;
-    const newPdf = await PdfModel.createNewPdf(name, filePath, projectName);
+    const newPdf = await PdfModel.uploadPDF(name, filePath, projectName);
+    res.json(newPdf);
+  } catch (error) {
+    console.error("Error creating PDF:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/create", async (req, res) => {
+  try {
+    const { name, projectName } = req.body;
+    const newPdf = await PdfModel.createNewPdf(name, projectName);
     res.json(newPdf);
   } catch (error) {
     console.error("Error creating PDF:", error);

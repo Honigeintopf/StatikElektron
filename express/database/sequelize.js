@@ -5,7 +5,7 @@ const path = require("path");
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: path.join(__dirname, "../your-database-name.sqlite"), // Adjust the path if needed
+  storage: path.join(__dirname, "../statikDB.sqlite"), // Adjust the path if needed
 });
 
 module.exports = sequelize;

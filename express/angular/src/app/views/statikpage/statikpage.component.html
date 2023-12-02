@@ -30,7 +30,7 @@
       (change)="onFileSelected($event)"
       accept=".pdf"
     />
-    <button mat-flat-button (click)="uploadPdf()">Upload PDF</button>
+    <button mat-flat-button (click)="uploadPdf(1)">Upload PDF</button>
   </div>
 
   <div>
@@ -42,9 +42,9 @@
   <div *ngIf="!isDragAndDropEnabled">
     <div class="example-list">
       <div class="example-box" *ngFor="let pdf of pdfs">
-        <button mat-flat-button (click)="handleButtonClick(pdf)">
-          {{ pdf.name }}
-        </button>
+        <button mat-flat-button (click)="uploadPdf(pdf.id)">Upload PDF</button>
+        {{ pdf.name }}
+        {{ pdf.id }}
       </div>
     </div>
   </div>

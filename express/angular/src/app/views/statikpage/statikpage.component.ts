@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PdfService } from 'src/app/service/pdf.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -7,9 +7,10 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   templateUrl: './statikpage.component.html',
   styleUrls: ['./statikpage.component.scss'],
 })
-export class StatikpageComponent {
+export class StatikpageComponent implements OnInit {
   newPdfName: string = '';
   pdfs: {
+    id: number;
     name: string;
     file?: string;
     subpoints?: { name: string; file: string }[];
@@ -19,10 +20,22 @@ export class StatikpageComponent {
   name: string = 'Test';
   projectName: string = 'Statik1';
   constructor(private pdfService: PdfService) {}
+
+  ngOnInit(): void {
+    this.pdfService.getPdfbyProject(this.projectName).subscribe(
+      (response) => {
+        console.log('init Response', response);
+      },
+      (error) => {
+        console.error('Init error', error);
+      }
+    );
+  }
+
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
   }
-  uploadPdf() {
+  uploadPdf(pdfID: number) {
     if (!this.selectedFile) {
       console.error('No file selected.');
       return;
@@ -52,8 +65,17 @@ export class StatikpageComponent {
   }
 
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {
-    const newPdf = { name, subpoints };
-    this.pdfs.push(newPdf);
+    this.pdfService.createPDF(name, this.projectName).subscribe(
+      (response) => {
+        console.log('PDF created', response);
+        const id = response.id;
+        const name = response.name;
+        this.pdfs.push({ id, name });
+      },
+      (error) => {
+        console.error('Error creating PDF:', error);
+      }
+    );
   }
 
   generateTableOfContents(): void {
