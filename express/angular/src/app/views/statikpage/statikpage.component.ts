@@ -12,7 +12,7 @@ export class StatikpageComponent implements OnInit {
   pdfs: {
     id: string;
     name: string;
-    file?: string;
+    filePath?: string;
     subpoints?: { name: string; file: string }[];
   }[] = [];
   isDragAndDropEnabled: boolean = true;
@@ -45,7 +45,8 @@ export class StatikpageComponent implements OnInit {
       .uploadPdf(this.selectedFile, pdfID, this.projectName)
       .subscribe(
         (response) => {
-          console.log('PDF created:', response);
+          console.log('PDF uploaded:', response);
+          this.updatePDFsArray();
         },
         (error) => {
           console.error('Error creating PDF:', error);
@@ -53,6 +54,25 @@ export class StatikpageComponent implements OnInit {
       );
   }
 
+  updatePDFsArray() {
+    this.pdfService.getPdfbyProject(this.projectName).subscribe(
+      (response) => {
+        console.log('init Response', response);
+        this.pdfs = response.files.map((file: any) => {
+          return {
+            id: file.id.toString(),
+            name: file.name,
+            filePath: file.filePath,
+            subpoints: file.subpoints,
+          };
+        });
+        console.log(this.pdfs);
+      },
+      (error) => {
+        console.error('Init error', error);
+      }
+    );
+  }
   getPdfbyProject() {
     this.pdfService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
@@ -68,14 +88,16 @@ export class StatikpageComponent implements OnInit {
     this.pdfService.createPDF(name, this.projectName).subscribe(
       (response) => {
         console.log('PDF created', response);
-        const id = response.id;
-        const name = response.name;
-        this.pdfs.push({ id, name });
+        this.updatePDFsArray();
       },
       (error) => {
         console.error('Error creating PDF:', error);
       }
     );
+  }
+
+  getColorForPdf(pdf: any): string {
+    return pdf.filePath ? 'black' : 'red';
   }
 
   generateTableOfContents(): void {
