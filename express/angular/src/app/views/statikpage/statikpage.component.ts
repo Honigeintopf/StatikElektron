@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { PdfService } from 'src/app/service/pdf.service';
+import { PdfHttpService } from 'src/app/service/pdfHttp.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
+import { PdfGenerateService } from 'src/app/service/pdf-generate.service';
+import { PDFDocument, PDFEmbeddedPage } from 'pdf-lib';
 @Component({
   selector: 'app-statikpage',
   templateUrl: './statikpage.component.html',
@@ -18,13 +19,90 @@ export class StatikpageComponent implements OnInit {
   isDragAndDropEnabled: boolean = true;
   selectedFile: File | undefined;
   projectName: string = 'Statik1';
-  constructor(private pdfService: PdfService) {}
+  constructor(
+    private pdfHttpService: PdfHttpService,
+    private pdfService: PdfGenerateService
+  ) {}
 
   ngOnInit(): void {
-    this.pdfService.getPdfbyProject(this.projectName).subscribe(
+    this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
       (response) => {},
       (error) => {}
     );
+  }
+
+  async generateModifiedPdf() {
+    if (!this.pdfs || this.pdfs.length === 0) {
+      console.error('No PDFs available');
+      return;
+    }
+
+    const pdfDoc = await PDFDocument.create();
+
+    for (const pdf of this.pdfs) {
+      if (pdf.filePath) {
+        try {
+          const pdfBuffer = await this.loadPdf(pdf.filePath);
+          await this.appendPdfToDocument(pdfDoc, pdfBuffer);
+        } catch (error) {
+          console.error(`Error loading PDF from ${pdf.filePath}:`, error);
+        }
+      }
+
+      // Add a page break after each PDF, adjust as needed
+      pdfDoc.addPage();
+    }
+
+    const headerText = 'Your Custom Header';
+
+    try {
+      const modifiedPdfBuffer = await this.pdfService.addHeaderToPdf(
+        await pdfDoc.save(),
+        headerText
+      );
+
+      // Create a Blob from the modified PDF buffer
+      const blob = new Blob([modifiedPdfBuffer], { type: 'application/pdf' });
+
+      // Create a downloadable link
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'modified.pdf'; // Set the desired filename
+
+      // Append the link to the DOM and trigger a click event to start the download
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the DOM
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating modified PDF:', error);
+    }
+  }
+
+  private async loadPdf(filePath: string): Promise<ArrayBuffer> {
+    const response = await fetch(filePath);
+    if (!response.ok) {
+      throw new Error(`Failed to load PDF from ${filePath}`);
+    }
+
+    return await response.arrayBuffer();
+  }
+  private async appendPdfToDocument(
+    pdfDoc: PDFDocument,
+    pdfBuffer: ArrayBuffer
+  ): Promise<void> {
+    const sourcePdf = await PDFDocument.load(pdfBuffer);
+    const sourcePages = await pdfDoc.copyPages(
+      sourcePdf,
+      sourcePdf.getPageIndices()
+    );
+
+    for (const sourcePage of sourcePages) {
+      const embeddedPage = await pdfDoc.embedPage(sourcePage);
+      const page = pdfDoc.addPage();
+      page.drawPage(embeddedPage);
+    }
   }
 
   onFileSelected(event: any) {
@@ -36,7 +114,7 @@ export class StatikpageComponent implements OnInit {
       return;
     }
 
-    this.pdfService
+    this.pdfHttpService
       .uploadPdf(this.selectedFile, pdfID, this.projectName)
       .subscribe(
         (response) => {
@@ -50,7 +128,7 @@ export class StatikpageComponent implements OnInit {
   }
 
   updatePDFsArray() {
-    this.pdfService.getPdfbyProject(this.projectName).subscribe(
+    this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
         this.pdfs = response.files.map((file: any) => {
           return {
@@ -67,7 +145,7 @@ export class StatikpageComponent implements OnInit {
     );
   }
   getPdfbyProject() {
-    this.pdfService.getPdfbyProject(this.projectName).subscribe(
+    this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
         console.log('PDFs of project:', response);
       },
@@ -78,7 +156,7 @@ export class StatikpageComponent implements OnInit {
   }
 
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {
-    this.pdfService.createPDF(name, this.projectName).subscribe(
+    this.pdfHttpService.createPDF(name, this.projectName).subscribe(
       (response) => {
         console.log('PDF created');
         this.updatePDFsArray();
@@ -94,7 +172,7 @@ export class StatikpageComponent implements OnInit {
   }
 
   generateTableOfContents(): void {
-    this.pdfService.generateTableOfContents(this.pdfs);
+    this.pdfHttpService.generateTableOfContents(this.pdfs);
   }
 
   drop(event: CdkDragDrop<string[]>) {

@@ -8,7 +8,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Injectable({
   providedIn: 'root',
 })
-export class PdfService {
+export class PdfHttpService {
   private apiUrl = 'http://localhost:3000/api/pdf'; // Adjust the URL based on your server configuration
 
   constructor(private http: HttpClient) {}
@@ -29,11 +29,6 @@ export class PdfService {
   // New method to get files by projectName
   getPdfbyProject(projectName: string): Observable<any> {
     const files = `${this.apiUrl}/files/${projectName}`;
-    return this.http.get(files);
-  }
-
-  getPdfPathsByProject(projectName: string): Observable<any> {
-    const files = `${this.apiUrl}/filePaths/${projectName}`;
     return this.http.get(files);
   }
 
