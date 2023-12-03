@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     MatIconModule,
     HttpClientModule,
     PdfViewerModule,
+    MatInputModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

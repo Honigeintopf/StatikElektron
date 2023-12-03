@@ -48,9 +48,6 @@ export class StatikpageComponent implements OnInit {
           console.error(`Error loading PDF from ${pdf.filePath}:`, error);
         }
       }
-
-      // Add a page break after each PDF, adjust as needed
-      pdfDoc.addPage();
     }
 
     const headerText = 'Your Custom Header';
@@ -90,7 +87,8 @@ export class StatikpageComponent implements OnInit {
   }
   private async appendPdfToDocument(
     pdfDoc: PDFDocument,
-    pdfBuffer: ArrayBuffer
+    pdfBuffer: ArrayBuffer,
+    scale: number = 0.8 // Default scale is 80%
   ): Promise<void> {
     const sourcePdf = await PDFDocument.load(pdfBuffer);
     const sourcePages = await pdfDoc.copyPages(
@@ -101,7 +99,22 @@ export class StatikpageComponent implements OnInit {
     for (const sourcePage of sourcePages) {
       const embeddedPage = await pdfDoc.embedPage(sourcePage);
       const page = pdfDoc.addPage();
-      page.drawPage(embeddedPage);
+
+      const { width, height } = sourcePage.getSize();
+      const scaledWidth = width * scale;
+      const scaledHeight = height * scale;
+
+      // Calculate the position to center the scaled content within the target page
+      const xOffset = (page.getWidth() - scaledWidth) / 2;
+      const yOffset = (page.getHeight() - scaledHeight) / 2;
+
+      // Draw the scaled page content with empty space around it
+      page.drawPage(embeddedPage, {
+        x: xOffset,
+        y: yOffset,
+        width: scaledWidth,
+        height: scaledHeight,
+      });
     }
   }
 

@@ -1,66 +1,73 @@
-<div class="container">
-  <div>
-    <label for="pdfName">PDF Name:</label>
-    <input type="text" id="pdfName" [(ngModel)]="newPdfName" />
-    <button mat-icon-button (click)="addPdf(newPdfName)">
-      <mat-icon>add</mat-icon>
-    </button>
-  </div>
-  <button mat-icon-button (click)="generateTableOfContents()">
-    <mat-icon>picture_as_pdf</mat-icon>
-  </button>
-  <button mat-icon-button (click)="toggleDragAndDrop()">
-    <mat-icon>drag_indicator</mat-icon>
-  </button>
+<div class="container d-flex mt-5">
+  <div class="col">
+    <div class="row d-flex flex-">
+      <label for="pdfName">PDF Name:</label>
+      <mat-form-field style="max-width: 250px"
+        ><input
+          matInput
+          type="text"
+          id="pdfName"
+          [(ngModel)]="newPdfName"
+          style="max-width: 50%"
+      /></mat-form-field>
 
+      <button mat-icon-button (click)="addPdf(newPdfName)">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <div class="row">
+      <button mat-icon-button (click)="generateModifiedPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+      </button>
+      <button mat-icon-button (click)="toggleDragAndDrop()">
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
+    </div>
+    <div *ngIf="isDragAndDropEnabled">
+      <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
+          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+          {{ pdf.name }}
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isDragAndDropEnabled">
+      <div class="example-list">
+        <div
+          class="example-box"
+          *ngFor="let pdf of pdfs"
+          [style.color]="getColorForPdf(pdf)"
+        >
+          <button mat-flat-button (click)="uploadPdf(pdf.id)">
+            Upload PDF
+          </button>
+          {{ pdf.name }}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <label for="pdfFile">Select PDF File:</label>
+      <input
+        type="file"
+        id="pdfFile"
+        (change)="onFileSelected($event)"
+        accept=".pdf"
+      />
+    </div>
+  </div>
+
+  <div class="col">
+    <div *ngFor="let pdf of pdfs">
+      <ng-container *ngIf="pdf.filePath !== null">
+        <pdf-viewer
+          [src]="pdf.filePath"
+          [render-text]="true"
+          [original-size]="false"
+          style="width: 400px; height: 500px"
+        ></pdf-viewer>
+      </ng-container>
+    </div>
+  </div>
   <!-- Use *ngIf to conditionally show/hide the drag-and-drop section -->
-  <div *ngIf="isDragAndDropEnabled">
-    <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
-        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-        {{ pdf.name }}
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="!isDragAndDropEnabled">
-    <div class="example-list">
-      <div
-        class="example-box"
-        *ngFor="let pdf of pdfs"
-        [style.color]="getColorForPdf(pdf)"
-      >
-        <button mat-flat-button (click)="uploadPdf(pdf.id)">Upload PDF</button>
-        {{ pdf.name }}
-      </div>
-    </div>
-  </div>
-  <div>
-    <label for="pdfFile">Select PDF File:</label>
-    <input
-      type="file"
-      id="pdfFile"
-      (change)="onFileSelected($event)"
-      accept=".pdf"
-    />
-  </div>
-
-  <div>
-    <label>Get PDF Files</label>
-  </div>
-  <div *ngFor="let pdf of pdfs">
-    <ng-container *ngIf="pdf.filePath !== null">
-      <pdf-viewer
-        [src]="pdf.filePath"
-        [render-text]="true"
-        [original-size]="false"
-        style="width: 400px; height: 500px"
-      ></pdf-viewer>
-    </ng-container>
-  </div>
-
-  <div class="row mt-5">
-    <button mat-button (click)="generateModifiedPdf()">Generate</button>
-  </div>
-  <!-- Show the list without drag-and-drop if isDragAndDropEnabled is false -->
 </div>
