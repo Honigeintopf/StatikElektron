@@ -38,4 +38,17 @@ PdfModel.getAllPdfsByProjectName = async (projectName) => {
   return files;
 };
 
+PdfModel.getAllPdfPathsByProjectName = async (projectName) => {
+  const files = await PdfModel.findAll({
+    attributes: ["filePath"], // Specify the attributes you want to retrieve
+    where: {
+      projectName: projectName,
+    },
+  });
+
+  // Extract the filePath values from the result
+  const filePaths = files.map((file) => file.filePath);
+
+  return filePaths;
+};
 module.exports = PdfModel;

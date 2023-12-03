@@ -18,16 +18,13 @@ export class StatikpageComponent implements OnInit {
   isDragAndDropEnabled: boolean = true;
   selectedFile: File | undefined;
   projectName: string = 'Statik1';
+  pdfSrc = 'assets/allPdfUploads/Statik1-Videocodecs_Ebubekir_ates.pdf';
   constructor(private pdfService: PdfService) {}
 
   ngOnInit(): void {
     this.pdfService.getPdfbyProject(this.projectName).subscribe(
-      (response) => {
-        console.log('init Response', response);
-      },
-      (error) => {
-        console.error('Init error', error);
-      }
+      (response) => {},
+      (error) => {}
     );
   }
 
@@ -44,7 +41,7 @@ export class StatikpageComponent implements OnInit {
       .uploadPdf(this.selectedFile, pdfID, this.projectName)
       .subscribe(
         (response) => {
-          console.log('PDF uploaded:', response);
+          console.log('PDF uploaded:');
           this.updatePDFsArray();
         },
         (error) => {
@@ -56,7 +53,6 @@ export class StatikpageComponent implements OnInit {
   updatePDFsArray() {
     this.pdfService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
-        console.log('init Response', response);
         this.pdfs = response.files.map((file: any) => {
           return {
             id: file.id.toString(),
@@ -65,10 +61,9 @@ export class StatikpageComponent implements OnInit {
             subpoints: file.subpoints,
           };
         });
-        console.log(this.pdfs);
       },
       (error) => {
-        console.error('Init error', error);
+        console.error('updatePDFSARRAYERROR', error);
       }
     );
   }
@@ -83,10 +78,21 @@ export class StatikpageComponent implements OnInit {
     );
   }
 
+  getPdfPathsByProject() {
+    this.pdfService.getPdfPathsByProject(this.projectName).subscribe(
+      (response) => {
+        console.log('PDF paths of project:', response);
+      },
+      (error) => {
+        console.error('Error creating PDF:', error);
+      }
+    );
+  }
+
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {
     this.pdfService.createPDF(name, this.projectName).subscribe(
       (response) => {
-        console.log('PDF created', response);
+        console.log('PDF created');
         this.updatePDFsArray();
       },
       (error) => {
@@ -113,6 +119,6 @@ export class StatikpageComponent implements OnInit {
 
   handleButtonClick(pdf: any): void {
     // Handle the button click for the specific PDF
-    console.log('Button clicked for:', pdf);
+    console.log('Button clicked for:');
   }
 }

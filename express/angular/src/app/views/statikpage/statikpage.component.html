@@ -47,8 +47,13 @@
 
   <div>
     <label>Get PDF Files</label>
-    <button mat-flat-button (click)="getPdfbyProject()">Get PDF</button>
+    <button mat-flat-button (click)="getPdfPathsByProject()">Get PDF</button>
   </div>
-
+  <pdf-viewer
+    [src]="pdfSrc"
+    [render-text]="true"
+    [original-size]="false"
+    style="width: 400px; height: 500px"
+  ></pdf-viewer>
   <!-- Show the list without drag-and-drop if isDragAndDropEnabled is false -->
 </div>

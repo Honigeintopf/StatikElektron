@@ -8,9 +8,9 @@ const router = express.Router();
 // Route to create a new PDF record
 router.post("/upload", async (req, res) => {
   try {
-    const { id, projectName } = req.body;
+    const { id, projectName, uploadFilePath } = req.body;
     console.log("The ID", id);
-    const filePath = req.file.path;
+    const filePath = uploadFilePath;
     const newPdf = await PdfModel.uploadPDF(id, filePath, projectName);
     res.json(newPdf);
   } catch (error) {
@@ -56,4 +56,16 @@ router.get("/files/:projectName", async (req, res) => {
   }
 });
 
+router.get("/filePaths/:projectName", async (req, res) => {
+  try {
+    const projectName = req.params.projectName;
+
+    const files = await PdfModel.getAllPdfPathsByProjectName(projectName);
+
+    res.json({ files });
+  } catch (error) {
+    console.error("Error retrieving files:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 module.exports = router;

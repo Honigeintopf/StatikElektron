@@ -16,10 +16,11 @@ export class PdfService {
   uploadPdf(file: File, id: string, projectName: string): Observable<any> {
     const formData = new FormData();
     const newFileName = `${projectName}-${file.name}`;
-
+    const uploadFilePath = `assets/allPdfUploads/${newFileName}`;
     formData.append('file', file, newFileName);
     formData.append('id', id);
     formData.append('projectName', projectName);
+    formData.append('uploadFilePath', uploadFilePath);
     const createEndpoint = `${this.apiUrl}/upload`;
 
     return this.http.post(createEndpoint, formData);
@@ -28,6 +29,11 @@ export class PdfService {
   // New method to get files by projectName
   getPdfbyProject(projectName: string): Observable<any> {
     const files = `${this.apiUrl}/files/${projectName}`;
+    return this.http.get(files);
+  }
+
+  getPdfPathsByProject(projectName: string): Observable<any> {
+    const files = `${this.apiUrl}/filePaths/${projectName}`;
     return this.http.get(files);
   }
 

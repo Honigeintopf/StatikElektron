@@ -39,7 +39,7 @@ module.exports = () => {
   );
 
   // Specify the destination folder on the desktop
-  const desktopPath = path.join(require("os").homedir(), "Desktop");
+  const desktopPath = path.join(__dirname, "angular/src/assets");
   const uploadFolderPath = path.join(desktopPath, "allPdfUploads");
 
   // Create the 'uploads' folder if it doesn't exist
