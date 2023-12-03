@@ -18,7 +18,6 @@ export class StatikpageComponent implements OnInit {
   isDragAndDropEnabled: boolean = true;
   selectedFile: File | undefined;
   projectName: string = 'Statik1';
-  pdfSrc = 'assets/allPdfUploads/Statik1-Videocodecs_Ebubekir_ates.pdf';
   constructor(private pdfService: PdfService) {}
 
   ngOnInit(): void {
@@ -71,17 +70,6 @@ export class StatikpageComponent implements OnInit {
     this.pdfService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
         console.log('PDFs of project:', response);
-      },
-      (error) => {
-        console.error('Error creating PDF:', error);
-      }
-    );
-  }
-
-  getPdfPathsByProject() {
-    this.pdfService.getPdfPathsByProject(this.projectName).subscribe(
-      (response) => {
-        console.log('PDF paths of project:', response);
       },
       (error) => {
         console.error('Error creating PDF:', error);

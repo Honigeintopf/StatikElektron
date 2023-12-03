@@ -16,7 +16,7 @@ export class PdfService {
   uploadPdf(file: File, id: string, projectName: string): Observable<any> {
     const formData = new FormData();
     const newFileName = `${projectName}-${file.name}`;
-    const uploadFilePath = `assets/allPdfUploads/${newFileName}`;
+    const uploadFilePath = `/assets/allPdfUploads/${newFileName}`;
     formData.append('file', file, newFileName);
     formData.append('id', id);
     formData.append('projectName', projectName);
