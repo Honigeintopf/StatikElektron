@@ -41,4 +41,21 @@ export class PdfHttpService {
     const deleteEndpoint = `${this.apiUrl}/delete/${id}`;
     return this.http.delete(deleteEndpoint);
   }
+
+  updatePDF(file: File, id: string, projectName: string): Observable<any> {
+    const formData = new FormData();
+    const newFileName = `${projectName}-${file.name}`;
+    const uploadFilePath = `/assets/allPdfUploads/${newFileName}`;
+    formData.append('file', file, newFileName);
+    formData.append('id', id);
+    formData.append('projectName', projectName);
+    formData.append('uploadFilePath', uploadFilePath);
+    const updateEndpoint = `${this.apiUrl}/update/${id}`;
+    return this.http.put(updateEndpoint, formData);
+  }
+
+  deleteFileOnly(id: string): Observable<any> {
+    const deleteEndpoint = `${this.apiUrl}/deleteFileOnly/${id}`;
+    return this.http.delete(deleteEndpoint);
+  }
 }

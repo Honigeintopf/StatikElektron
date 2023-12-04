@@ -40,24 +40,37 @@
           [style.color]="getColorForPdf(pdf)"
         >
           <!-- Use a label to trigger the file input -->
-          <label class="upload-button">
-            <span>Upload {{ pdf.name }}</span>
-            <input
-              mat-input
-              type="file"
-              (change)="onFileSelected($event, pdf.id)"
-              accept=".pdf"
-            />
-          </label>
+          <div *ngIf="pdf.filePath === null">
+            <label class="upload-button">
+              <span>Upload {{ pdf.name }}</span>
+              <input
+                mat-input
+                type="file"
+                (change)="onFileSelected($event, pdf.id, false)"
+                accept=".pdf"
+              />
+            </label>
+          </div>
+          <div *ngIf="pdf.filePath !== null">
+            <label class="upload-button">
+              <span>Edit {{ pdf.name }}</span>
+              <input
+                mat-input
+                type="file"
+                (change)="onFileSelected($event, pdf.id, true)"
+                accept=".pdf"
+              />
+            </label>
+          </div>
           <button mat-mini-fab (click)="deletePdf(pdf.id)">
             <mat-icon>delete</mat-icon>
           </button>
           {{ pdf.name }}
         </div>
       </div>
-      <div *ngIf="hasSpecialCharacters">
-        <p style="color: red">PDF hat spezielle Charakter ä,ö,ü.</p>
-      </div>
+    </div>
+    <div *ngIf="hasSpecialCharacters">
+      <p style="color: red">PDF hat spezielle Charakter ä,ö,ü.</p>
     </div>
   </div>
 

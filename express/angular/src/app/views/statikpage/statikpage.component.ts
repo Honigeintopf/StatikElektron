@@ -119,7 +119,7 @@ export class StatikpageComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: any, pdfId: string) {
+  onFileSelected(event: any, pdfId: string, edit: boolean) {
     const selectedFile = event.target.files[0];
 
     if (!selectedFile) {
@@ -140,7 +140,40 @@ export class StatikpageComponent implements OnInit {
     }
     this.hasSpecialCharacters = false;
     this.selectedFiles[pdfId] = selectedFile;
-    this.uploadPdf(pdfId);
+    if (edit) {
+      this.updatePdf(pdfId);
+    } else {
+      this.uploadPdf(pdfId);
+    }
+  }
+
+  updatePdf(pdfID: string) {
+    const selectedFile = this.selectedFiles[pdfID];
+    if (!selectedFile) {
+      console.error('No file selected for PDF with ID:', pdfID);
+      return;
+    }
+
+    this.pdfHttpService.deleteFileOnly(pdfID).subscribe(
+      (response) => {
+        console.log('PDF deleted successfully', response);
+        // Perform any additional actions after deletion
+      },
+      (error) => {
+        console.error('Error deleting PDF:', error);
+      }
+    );
+    this.pdfHttpService
+      .updatePDF(selectedFile, pdfID, this.projectName)
+      .subscribe(
+        (response) => {
+          console.log('PDF uploaded:', response);
+          this.updatePDFsArray();
+        },
+        (error) => {
+          console.error('Error uploading PDF:', error);
+        }
+      );
   }
 
   uploadPdf(pdfID: string) {

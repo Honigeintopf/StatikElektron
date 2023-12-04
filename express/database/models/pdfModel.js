@@ -44,4 +44,11 @@ PdfModel.getAllPdfsByProjectName = async (projectName) => {
   return files;
 };
 
+PdfModel.updatePDF = async (id, filePath, projectName, absoluteFilePath) => {
+  return PdfModel.update(
+    { filePath, absoluteFilePath },
+    { where: { id, projectName } }
+  );
+};
+
 module.exports = PdfModel;

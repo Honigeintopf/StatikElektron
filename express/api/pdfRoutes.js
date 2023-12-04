@@ -110,4 +110,50 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
+router.put("/update/:id", async (req, res) => {
+  try {
+    const pdfId = req.params.id;
+    const { projectName, uploadFilePath } = req.body;
+    const filePath = uploadFilePath;
+    const absoluteFilePath = req.file.path;
+
+    // Update PDF details in the database
+    const updatedPdf = await PdfModel.updatePDF(
+      pdfId,
+      filePath,
+      projectName,
+      absoluteFilePath
+    );
+
+    res.json(updatedPdf);
+  } catch (error) {
+    console.error("Error updating PDF:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/deleteFileOnly/:id", async (req, res) => {
+  try {
+    const pdfId = req.params.id;
+
+    const pdfToDelete = await PdfModel.findByPk(pdfId);
+
+    if (!pdfToDelete) {
+      return res.status(404).json({ error: "PDF not found" });
+    }
+
+    const absoluteFilePath = pdfToDelete.absoluteFilePath;
+
+    if (fs.existsSync(absoluteFilePath)) {
+      fs.unlinkSync(absoluteFilePath);
+      console.log("File deleted successfully:", absoluteFilePath);
+    }
+
+    res.json({ message: "PDF deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting PDF:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
