@@ -55,6 +55,9 @@
           {{ pdf.name }}
         </div>
       </div>
+      <div *ngIf="hasSpecialCharacters">
+        <p style="color: red">PDF hat spezielle Charakter ä,ö,ü.</p>
+      </div>
     </div>
   </div>
 

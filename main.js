@@ -16,6 +16,10 @@ function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
+    icon: path.join(
+      __dirname,
+      "express/angular/dist/statikgenerator/assets/icon.ico"
+    ),
     width: 1920,
     height: 1080,
     autoHideMenuBar: true,

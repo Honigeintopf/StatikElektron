@@ -19,6 +19,7 @@ export class StatikpageComponent implements OnInit {
   isDragAndDropEnabled: boolean = true;
   selectedFiles: { [pdfId: string]: File } = {};
   projectName: string = 'Statik1';
+  hasSpecialCharacters: boolean = false;
   constructor(
     private pdfHttpService: PdfHttpService,
     private pdfService: PdfGenerateService
@@ -119,7 +120,26 @@ export class StatikpageComponent implements OnInit {
   }
 
   onFileSelected(event: any, pdfId: string) {
-    this.selectedFiles[pdfId] = event.target.files[0];
+    const selectedFile = event.target.files[0];
+
+    if (!selectedFile) {
+      console.error('No file selected for PDF with ID:', pdfId);
+      return;
+    }
+
+    // Check for special characters in the file name
+    const hasSpecialCharacters = /[äöü]/.test(selectedFile.name);
+
+    if (hasSpecialCharacters) {
+      console.error(
+        'File name contains special characters. Please choose a different file.'
+      );
+      this.hasSpecialCharacters = true; // Set the flag to true
+      // You can also display an error message to the user here
+      return;
+    }
+    this.hasSpecialCharacters = false;
+    this.selectedFiles[pdfId] = selectedFile;
     this.uploadPdf(pdfId);
   }
 
