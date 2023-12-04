@@ -2,6 +2,8 @@
 
 const express = require("express");
 const PdfModel = require("../database/models/pdfModel");
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 
@@ -11,7 +13,13 @@ router.post("/upload", async (req, res) => {
     const { id, projectName, uploadFilePath } = req.body;
     console.log("The ID", id);
     const filePath = uploadFilePath;
-    const newPdf = await PdfModel.uploadPDF(id, filePath, projectName);
+    const absoluteFilePath = req.file.path;
+    const newPdf = await PdfModel.uploadPDF(
+      id,
+      filePath,
+      projectName,
+      absoluteFilePath
+    );
     res.json(newPdf);
   } catch (error) {
     console.error("Error creating PDF:", error);
@@ -68,4 +76,38 @@ router.get("/filePaths/:projectName", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const pdfId = req.params.id;
+
+    // Retrieve the PDF record from the database
+    const pdfToDelete = await PdfModel.findByPk(pdfId);
+
+    if (!pdfToDelete) {
+      return res.status(404).json({ error: "PDF not found" });
+    }
+
+    // Delete the file using the absolute file path from the database
+    const absoluteFilePath = pdfToDelete.absoluteFilePath;
+
+    if (fs.existsSync(absoluteFilePath)) {
+      fs.unlinkSync(absoluteFilePath);
+      console.log("File deleted successfully:", absoluteFilePath);
+    }
+
+    // Delete the PDF record from the database
+    await PdfModel.destroy({
+      where: {
+        id: pdfId,
+      },
+    });
+
+    res.json({ message: "PDF deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting PDF:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

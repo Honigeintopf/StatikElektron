@@ -168,6 +168,19 @@ export class StatikpageComponent implements OnInit {
     );
   }
 
+  deletePdf(id: string): void {
+    this.pdfHttpService.deletePDF(id).subscribe(
+      (response) => {
+        console.log('PDF deleted successfully', response);
+        this.updatePDFsArray(); // Update the PDFs array after deletion
+        // Perform any additional actions after successful deletion
+      },
+      (error) => {
+        console.error('Error deleting PDF', error);
+        // Handle error, display a message, etc.
+      }
+    );
+  }
   addPdf(name: string, subpoints?: { name: string; file: string }[]): void {
     this.pdfHttpService.createPDF(name, this.projectName).subscribe(
       (response) => {
@@ -185,7 +198,7 @@ export class StatikpageComponent implements OnInit {
   }
 
   generateTableOfContents(): void {
-    this.pdfHttpService.generateTableOfContents(this.pdfs);
+    this.pdfService.generateTableOfContents(this.pdfs);
   }
 
   drop(event: CdkDragDrop<string[]>) {

@@ -42,6 +42,9 @@
           <button mat-flat-button (click)="uploadPdf(pdf.id)">
             Upload PDF
           </button>
+          <button mat-mini-fab (click)="deletePdf(pdf.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
           {{ pdf.name }}
         </div>
       </div>
