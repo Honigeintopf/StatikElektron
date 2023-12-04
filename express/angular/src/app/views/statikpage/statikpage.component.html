@@ -39,24 +39,22 @@
           *ngFor="let pdf of pdfs"
           [style.color]="getColorForPdf(pdf)"
         >
-          <button mat-flat-button (click)="uploadPdf(pdf.id)">
-            Upload PDF
-          </button>
+          <!-- Use a label to trigger the file input -->
+          <label class="upload-button">
+            <span>Upload {{ pdf.name }}</span>
+            <input
+              mat-input
+              type="file"
+              (change)="onFileSelected($event, pdf.id)"
+              accept=".pdf"
+            />
+          </label>
           <button mat-mini-fab (click)="deletePdf(pdf.id)">
             <mat-icon>delete</mat-icon>
           </button>
           {{ pdf.name }}
         </div>
       </div>
-    </div>
-    <div class="row">
-      <label for="pdfFile">Select PDF File:</label>
-      <input
-        type="file"
-        id="pdfFile"
-        (change)="onFileSelected($event)"
-        accept=".pdf"
-      />
     </div>
   </div>
 

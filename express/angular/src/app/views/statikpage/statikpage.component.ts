@@ -17,7 +17,7 @@ export class StatikpageComponent implements OnInit {
     subpoints?: { name: string; file: string }[];
   }[] = [];
   isDragAndDropEnabled: boolean = true;
-  selectedFile: File | undefined;
+  selectedFiles: { [pdfId: string]: File } = {};
   projectName: string = 'Statik1';
   constructor(
     private pdfHttpService: PdfHttpService,
@@ -118,28 +118,31 @@ export class StatikpageComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+  onFileSelected(event: any, pdfId: string) {
+    this.selectedFiles[pdfId] = event.target.files[0];
+    this.uploadPdf(pdfId);
   }
+
   uploadPdf(pdfID: string) {
-    if (!this.selectedFile) {
-      console.error('No file selected.');
+    const selectedFile = this.selectedFiles[pdfID];
+
+    if (!selectedFile) {
+      console.error('No file selected for PDF with ID:', pdfID);
       return;
     }
 
     this.pdfHttpService
-      .uploadPdf(this.selectedFile, pdfID, this.projectName)
+      .uploadPdf(selectedFile, pdfID, this.projectName)
       .subscribe(
         (response) => {
-          console.log('PDF uploaded:');
+          console.log('PDF uploaded:', response);
           this.updatePDFsArray();
         },
         (error) => {
-          console.error('Error creating PDF:', error);
+          console.error('Error uploading PDF:', error);
         }
       );
   }
-
   updatePDFsArray() {
     this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
