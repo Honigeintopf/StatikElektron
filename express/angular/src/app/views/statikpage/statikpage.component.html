@@ -1,5 +1,6 @@
 <div class="container d-flex justify-content-start mt-5">
   <div class="col-1"></div>
+
   <div class="col-6">
     <div class="row d-flex flex-row">
       <div class="col">
@@ -19,7 +20,6 @@
 >
   <div
     class="col-1 d-flex justify-content-start align-items-center flex-column"
-    style="min-height: inherit"
   >
     <button
       mat-icon-button
@@ -36,86 +36,89 @@
       <mat-icon>drag_indicator</mat-icon>
     </button>
   </div>
-  <div
-    class="col-6 d-flex justify-content-start align-items-center flex-column border"
-    style="min-height: inherit"
-  >
-    <div class="row d-flex w-100 mt-5 border-bottom align-items-center">
-      <mat-form-field style="max-width: 400px">
-        <mat-label>Neue PDF</mat-label
-        ><input
-          matInput
-          type="text"
-          id="pdfName"
-          [(ngModel)]="newPdfName"
-          style="max-width: 50%"
-      /></mat-form-field>
+  <div class="col d-flex">
+    <div
+      class="col-6 d-flex justify-content-start align-items-center flex-column border"
+    >
+      <div class="row d-flex w-100 mt-5 border-bottom align-items-center">
+        <mat-form-field style="max-width: 400px">
+          <mat-label>Neue PDF</mat-label
+          ><input
+            matInput
+            type="text"
+            id="pdfName"
+            [(ngModel)]="newPdfName"
+            style="max-width: 50%"
+        /></mat-form-field>
 
-      <button mat-icon-button (click)="addPdf(newPdfName)" class="mb-3">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-    <div *ngIf="isDragAndDropEnabled">
-      <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-        <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
-          <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-          {{ pdf.name }}
-        </div>
+        <button mat-icon-button (click)="addPdf(newPdfName)" class="mb-3">
+          <mat-icon>add</mat-icon>
+        </button>
       </div>
-    </div>
-
-    <div *ngIf="!isDragAndDropEnabled">
-      <div class="example-list">
+      <div *ngIf="isDragAndDropEnabled">
         <div
-          class="example-box"
-          *ngFor="let pdf of pdfs"
-          [style.color]="getColorForPdf(pdf)"
+          cdkDropList
+          class="example-list"
+          (cdkDropListDropped)="drop($event)"
         >
-          <!-- Use a button to trigger the file input -->
-          <div *ngIf="pdf.filePath === null">
-            <button mat-mini-fab (click)="fileInput.click()">
-              <mat-icon>publish</mat-icon>
-            </button>
-            <input
-              hidden
-              (change)="onFileSelected($event, pdf.id, false)"
-              #fileInput
-              type="file"
-              accept=".pdf"
-            />
+          <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
+            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+            {{ pdf.name }}
           </div>
-          <div *ngIf="pdf.filePath !== null">
-            <button mat-mini-fab (click)="fileInput.click()">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <input
-              hidden
-              (change)="onFileSelected($event, pdf.id, true)"
-              #fileInput
-              type="file"
-              accept=".pdf"
-            />
-          </div>
-          <button mat-mini-fab (click)="deletePdf(pdf.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-          {{ pdf.name }}
         </div>
       </div>
-    </div>
-    <div *ngIf="hasSpecialCharacters">
-      <p style="color: red">PDF hat spezielle Charakter ä,ö,ü.</p>
-    </div>
-  </div>
 
-  <div
-    class="col d-flex flex-column justify-content-center align-items-center border"
-    style="min-height: inherit"
-  >
-    <div *ngFor="let pdf of pdfs; let i = index">
-      <ng-container *ngIf="pdf.filePath !== null">
-        <div class="pageContainer">
-          <div class="row d-flex flex-row">
+      <div *ngIf="!isDragAndDropEnabled">
+        <div class="example-list">
+          <div
+            class="example-box"
+            *ngFor="let pdf of pdfs"
+            [style.color]="getColorForPdf(pdf)"
+          >
+            <!-- Use a button to trigger the file input -->
+            <div *ngIf="pdf.filePath === null">
+              <button mat-mini-fab (click)="fileInput.click()">
+                <mat-icon>publish</mat-icon>
+              </button>
+              <input
+                hidden
+                (change)="onFileSelected($event, pdf.id, false)"
+                #fileInput
+                type="file"
+                accept=".pdf"
+              />
+            </div>
+            <div *ngIf="pdf.filePath !== null">
+              <button mat-mini-fab (click)="fileInput.click()">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <input
+                hidden
+                (change)="onFileSelected($event, pdf.id, true)"
+                #fileInput
+                type="file"
+                accept=".pdf"
+              />
+            </div>
+            <button mat-mini-fab (click)="deletePdf(pdf.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            {{ pdf.name }}
+          </div>
+        </div>
+      </div>
+      <div *ngIf="hasSpecialCharacters">
+        <p style="color: red">PDF hat spezielle Charakter ä,ö,ü.</p>
+      </div>
+    </div>
+
+    <div
+      class="col-6 d-flex flex-column justify-content-center align-items-center border"
+    >
+      <div *ngFor="let pdf of pdfs; let i = index">
+        <ng-container *ngIf="pdf.filePath !== null">
+          <!-- New row for each pdf-viewer -->
+          <div class="row mb-3">
             <div class="col">
               <p style="margin-bottom: 0px; margin-left: 13px">
                 Seite {{ i + 1 }} von {{ pdfs.length }} -
@@ -124,15 +127,19 @@
             </div>
           </div>
 
-          <pdf-viewer
-            [src]="pdf.filePath"
-            [render-text]="true"
-            [original-size]="false"
-            style="width: 400px; height: 500px"
-            [show-borders]="true"
-          ></pdf-viewer>
-        </div>
-      </ng-container>
+          <div class="row">
+            <div class="col">
+              <pdf-viewer
+                [src]="pdf.filePath"
+                [render-text]="true"
+                [original-size]="false"
+                style="width: 400px; height: 500px"
+                [show-borders]="true"
+              ></pdf-viewer>
+            </div>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>
