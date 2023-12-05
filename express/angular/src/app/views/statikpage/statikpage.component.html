@@ -1,8 +1,48 @@
-<div class="container d-flex mt-5">
-  <div class="col">
-    <div class="row d-flex flex-">
-      <label for="pdfName">PDF Name:</label>
-      <mat-form-field style="max-width: 250px"
+<div class="container d-flex justify-content-start mt-5">
+  <div class="col-1"></div>
+  <div class="col-6">
+    <div class="row d-flex flex-row">
+      <div class="col">
+        <p style="margin-bottom: 0px">Inhalt</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="row">
+      <p style="margin-bottom: 0px">Seiten</p>
+    </div>
+  </div>
+</div>
+<div
+  class="container d-flex justify-content-center align-items-center"
+  style="min-height: 100vh"
+>
+  <div
+    class="col-1 d-flex justify-content-start align-items-center flex-column"
+    style="min-height: inherit"
+  >
+    <button
+      mat-icon-button
+      (click)="generateModifiedPdf()"
+      class="icon-button-large"
+    >
+      <mat-icon>picture_as_pdf</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="toggleDragAndDrop()"
+      class="icon-button-large"
+    >
+      <mat-icon>drag_indicator</mat-icon>
+    </button>
+  </div>
+  <div
+    class="col-6 d-flex justify-content-start align-items-center flex-column border"
+    style="min-height: inherit"
+  >
+    <div class="row d-flex w-100 mt-5 border-bottom align-items-center">
+      <mat-form-field style="max-width: 400px">
+        <mat-label>Neue PDF</mat-label
         ><input
           matInput
           type="text"
@@ -11,16 +51,8 @@
           style="max-width: 50%"
       /></mat-form-field>
 
-      <button mat-icon-button (click)="addPdf(newPdfName)">
+      <button mat-icon-button (click)="addPdf(newPdfName)" class="mb-3">
         <mat-icon>add</mat-icon>
-      </button>
-    </div>
-    <div class="row">
-      <button mat-icon-button (click)="generateModifiedPdf()">
-        <mat-icon>picture_as_pdf</mat-icon>
-      </button>
-      <button mat-icon-button (click)="toggleDragAndDrop()">
-        <mat-icon>drag_indicator</mat-icon>
       </button>
     </div>
     <div *ngIf="isDragAndDropEnabled">
@@ -76,17 +108,29 @@
     </div>
   </div>
 
-  <div class="col">
-    <div *ngFor="let pdf of pdfs">
-      <ng-container *ngIf="pdf.filePath !== null">
-        <pdf-viewer
-          [src]="pdf.filePath"
-          [render-text]="true"
-          [original-size]="false"
-          style="width: 400px; height: 500px"
-        ></pdf-viewer>
-      </ng-container>
+  <div
+    class="col d-flex flex-column justify-content-center align-items-center border"
+    style="min-height: inherit"
+  >
+    <!-- <div *ngFor="let pdf of pdfs"> -->
+    <!-- <ng-container *ngIf="pdf.filePath !== null"> -->
+    <div class="pageContainer">
+      <div class="row d-flex flex-row">
+        <div class="col">
+          <p style="margin-bottom: 0px; margin-left: 13px">Seite 1 -</p>
+        </div>
+        <div class="col"><p style="margin-bottom: 0px">Deckblatt</p></div>
+      </div>
+
+      <pdf-viewer
+        [src]="srcTest"
+        [render-text]="true"
+        [original-size]="false"
+        style="width: 400px; height: 500px"
+        [show-borders]="true"
+      ></pdf-viewer>
     </div>
+    <!-- </ng-container> -->
+    <!-- </div> -->
   </div>
-  <!-- Use *ngIf to conditionally show/hide the drag-and-drop section -->
 </div>

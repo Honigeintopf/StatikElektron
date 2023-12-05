@@ -20,6 +20,8 @@ export class StatikpageComponent implements OnInit {
   selectedFiles: { [pdfId: string]: File } = {};
   projectName: string = 'Statik1';
   hasSpecialCharacters: boolean = false;
+  srcTest = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
+
   constructor(
     private pdfHttpService: PdfHttpService,
     private pdfService: PdfGenerateService
