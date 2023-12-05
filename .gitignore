@@ -44,3 +44,4 @@ testem.log
 package-lock.json
 
 express/statikDB.sqlite
+express/statikDB.sqlite
