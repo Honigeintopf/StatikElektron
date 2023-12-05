@@ -42,6 +42,13 @@ export class PdfGenerateService {
   }
   constructor() {}
 
+  getNumberOfPages(pdfBuffer: ArrayBuffer): Promise<number> {
+    return PDFDocument.load(pdfBuffer).then((pdfDoc) => {
+      console.log('Sind drinne');
+      console.log('Im Service', pdfDoc.getPageCount());
+      return pdfDoc.getPageCount();
+    });
+  }
   generateTableOfContents(
     pdfs: {
       name: string;

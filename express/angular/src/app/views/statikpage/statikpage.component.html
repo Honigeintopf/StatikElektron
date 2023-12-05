@@ -112,25 +112,27 @@
     class="col d-flex flex-column justify-content-center align-items-center border"
     style="min-height: inherit"
   >
-    <!-- <div *ngFor="let pdf of pdfs"> -->
-    <!-- <ng-container *ngIf="pdf.filePath !== null"> -->
-    <div class="pageContainer">
-      <div class="row d-flex flex-row">
-        <div class="col">
-          <p style="margin-bottom: 0px; margin-left: 13px">Seite 1 -</p>
-        </div>
-        <div class="col"><p style="margin-bottom: 0px">Deckblatt</p></div>
-      </div>
+    <div *ngFor="let pdf of pdfs; let i = index">
+      <ng-container *ngIf="pdf.filePath !== null">
+        <div class="pageContainer">
+          <div class="row d-flex flex-row">
+            <div class="col">
+              <p style="margin-bottom: 0px; margin-left: 13px">
+                Seite {{ i + 1 }} von {{ pdfs.length }} -
+                <span style="color: grey">{{ pdf.name }}</span>
+              </p>
+            </div>
+          </div>
 
-      <pdf-viewer
-        [src]="srcTest"
-        [render-text]="true"
-        [original-size]="false"
-        style="width: 400px; height: 500px"
-        [show-borders]="true"
-      ></pdf-viewer>
+          <pdf-viewer
+            [src]="pdf.filePath"
+            [render-text]="true"
+            [original-size]="false"
+            style="width: 400px; height: 500px"
+            [show-borders]="true"
+          ></pdf-viewer>
+        </div>
+      </ng-container>
     </div>
-    <!-- </ng-container> -->
-    <!-- </div> -->
   </div>
 </div>
