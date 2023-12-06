@@ -4,13 +4,15 @@
   <div class="col-6">
     <div class="row d-flex flex-row">
       <div class="col">
-        <p style="margin-bottom: 0px">Inhalt</p>
+        <div class="row">
+          <p style="margin-bottom: 0px"><mat-icon>draw</mat-icon>Inhalt</p>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-6">
     <div class="row">
-      <p style="margin-bottom: 0px">Seiten</p>
+      <p style="margin-bottom: 0px"><mat-icon>crop_free</mat-icon>Seiten</p>
     </div>
   </div>
 </div>
@@ -35,6 +37,13 @@
         class="icon-button-large"
       >
         <mat-icon>drag_indicator</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="generateDefaultPDFs()"
+        class="icon-button-large"
+      >
+        <mat-icon>dynamic_feed</mat-icon>
       </button>
     </div>
     <div
@@ -63,21 +72,24 @@
         >
           <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
             <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-            {{ pdf.name }}
+            <mat-icon>description</mat-icon>
+            <p style="margin-bottom: 0px">{{ pdf.name }}</p>
           </div>
         </div>
       </div>
 
-      <div *ngIf="!isDragAndDropEnabled">
+      <div *ngIf="!isDragAndDropEnabled" class="w-100">
         <div class="example-list">
           <div
             class="example-box"
             *ngFor="let pdf of pdfs"
             [style.color]="getColorForPdf(pdf)"
           >
+            <mat-icon>description</mat-icon>
+            <p style="margin-bottom: 0px">{{ pdf.name }}</p>
             <!-- Use a button to trigger the file input -->
             <div *ngIf="pdf.filePath === null">
-              <button mat-mini-fab (click)="fileInput.click()">
+              <button mat-icon-button (click)="fileInput.click()">
                 <mat-icon>publish</mat-icon>
               </button>
               <input
@@ -89,7 +101,7 @@
               />
             </div>
             <div *ngIf="pdf.filePath !== null">
-              <button mat-mini-fab (click)="fileInput.click()">
+              <button mat-icon-button (click)="fileInput.click()">
                 <mat-icon>edit</mat-icon>
               </button>
               <input
@@ -100,10 +112,9 @@
                 accept=".pdf"
               />
             </div>
-            <button mat-mini-fab (click)="deletePdf(pdf.id)">
+            <button mat-icon-button (click)="deletePdf(pdf.id)">
               <mat-icon>delete</mat-icon>
             </button>
-            {{ pdf.name }}
           </div>
         </div>
       </div>
@@ -118,7 +129,7 @@
       <div *ngFor="let pdf of pdfs; let i = index">
         <ng-container *ngIf="pdf.filePath !== null">
           <!-- New row for each pdf-viewer -->
-          <div class="row mb-3">
+          <div class="row my-5">
             <div class="col">
               <p style="margin-bottom: 0px; margin-left: 13px">
                 Seite {{ i + 1 }} von {{ pdfs.length }} -

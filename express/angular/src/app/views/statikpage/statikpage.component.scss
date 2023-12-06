@@ -1,22 +1,20 @@
 .example-list {
-  width: 500px;
   max-width: 100%;
-  border: solid 1px #ccc;
-  min-height: 60px;
   display: block;
   background: white;
   border-radius: 4px;
   overflow: hidden;
+  width: 640px;
 }
 
 .example-box {
+  min-height: 88px;
   padding: 20px 10px;
-  border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   box-sizing: border-box;
   cursor: move;
   background: white;
