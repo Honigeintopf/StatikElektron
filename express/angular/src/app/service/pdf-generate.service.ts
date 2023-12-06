@@ -51,76 +51,83 @@ export class PdfGenerateService {
       return pdfDoc.getPageCount();
     });
   }
-  generateTableOfContents(
+  async generateTableOfContents(
     pdfs: {
       name: string;
       file?: string;
       subpoints?: { name: string; file: string }[];
     }[],
     inhaltsverzeichnissPdf: PDFModel // Pass the Inhaltsverzeichniss PDF entry from the DB
-  ): void {
-    const content = [
-      { text: 'Table of Contents', style: 'header' },
-      { text: '\n', style: 'subheader' },
-    ];
+  ): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const content = [
+          { text: 'Table of Contents', style: 'header' },
+          { text: '\n', style: 'subheader' },
+        ];
 
-    pdfs.forEach((pdf, index) => {
-      const pdfText = `${index + 1}. ${pdf.name}`;
+        pdfs.forEach((pdf, index) => {
+          const pdfText = `${index + 1}. ${pdf.name}`;
 
-      content.push({ text: pdfText, style: 'subheader' });
+          content.push({ text: pdfText, style: 'subheader' });
 
-      if (pdf.subpoints && pdf.subpoints.length > 0) {
-        pdf.subpoints.forEach((subpoint, subIndex) => {
-          const subpointText = `${index + 1}.${subIndex + 1} ${subpoint.name}`;
-          content.push({ text: subpointText, style: 'sub-subheader' });
-        });
-      }
-    });
-
-    const documentDefinition = {
-      content,
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-        },
-        subheader: {
-          fontSize: 14,
-          bold: true,
-        },
-        'sub-subheader': {
-          fontSize: 12,
-          italic: true,
-        },
-      },
-    };
-
-    // Create the PDF
-    const generatedPdf = pdfMake.createPdf(documentDefinition);
-
-    // Convert the generated PDF to a Blob
-    generatedPdf.getBlob(async (blob: Blob) => {
-      // Create a new File from the Blob
-      const generatedPdfFile = new File([blob], 'GeneratedPDF.pdf', {
-        type: 'application/pdf',
-      });
-
-      // Update the entry in the database with the new file using the updatePDF method
-      this.pdfHttpService
-        .updatePDF(
-          generatedPdfFile,
-          inhaltsverzeichnissPdf.id.toString(),
-          inhaltsverzeichnissPdf.projectName
-        )
-        .subscribe(
-          (response) => {
-            console.log('Inhaltsverzeichniss PDF updated:', response);
-            // Perform any additional actions after updating the entry
-          },
-          (error) => {
-            console.error('Error updating Inhaltsverzeichniss PDF:', error);
+          if (pdf.subpoints && pdf.subpoints.length > 0) {
+            pdf.subpoints.forEach((subpoint, subIndex) => {
+              const subpointText = `${index + 1}.${subIndex + 1} ${
+                subpoint.name
+              }`;
+              content.push({ text: subpointText, style: 'sub-subheader' });
+            });
           }
-        );
+        });
+
+        const documentDefinition = {
+          content,
+          styles: {
+            header: {
+              fontSize: 18,
+              bold: true,
+            },
+            subheader: {
+              fontSize: 14,
+              bold: true,
+            },
+            'sub-subheader': {
+              fontSize: 12,
+              italic: true,
+            },
+          },
+        };
+
+        // Create the PDF
+        const generatedPdf = pdfMake.createPdf(documentDefinition);
+
+        // Convert the generated PDF to a Blob
+        generatedPdf.getBlob(async (blob: Blob) => {
+          // Create a new File from the Blob
+          const generatedPdfFile = new File([blob], 'GeneratedPDF.pdf', {
+            type: 'application/pdf',
+          });
+
+          // Update the entry in the database with the new file using the updatePDF method
+          await this.pdfHttpService
+            .updatePDF(
+              generatedPdfFile,
+              inhaltsverzeichnissPdf.id.toString(),
+              inhaltsverzeichnissPdf.projectName
+            )
+            .toPromise();
+
+          console.log('Inhaltsverzeichniss PDF updated');
+          // Perform any additional actions after updating the entry
+
+          // Resolve the promise to indicate that the operation is complete
+          resolve();
+        });
+      } catch (error) {
+        console.error('Error generating and updating PDF:', error);
+        reject(error);
+      }
     });
   }
 }

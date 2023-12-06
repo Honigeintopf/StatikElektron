@@ -272,7 +272,10 @@ export class StatikpageComponent implements OnInit {
   async generateTableOfContents(
     inhaltsverzeichnissPdf: PDFModel
   ): Promise<void> {
-    this.pdfService.generateTableOfContents(this.pdfs, inhaltsverzeichnissPdf);
+    await this.pdfService.generateTableOfContents(
+      this.pdfs,
+      inhaltsverzeichnissPdf
+    );
   }
 
   async generateDefaultPDFs(): Promise<void> {
