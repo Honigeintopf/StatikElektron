@@ -3,6 +3,7 @@ import { PdfHttpService } from 'src/app/service/pdfHttp.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PdfGenerateService } from 'src/app/service/pdf-generate.service';
 import { PDFDocument, PDFEmbeddedPage } from 'pdf-lib';
+import { PDFModel } from './pdf-model.interface';
 @Component({
   selector: 'app-statikpage',
   templateUrl: './statikpage.component.html',
@@ -27,12 +28,7 @@ export class StatikpageComponent implements OnInit {
     private pdfService: PdfGenerateService
   ) {}
 
-  ngOnInit(): void {
-    this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
-      (response) => {},
-      (error) => {}
-    );
-  }
+  ngOnInit(): void {}
 
   async generateModifiedPdf() {
     if (!this.pdfs || this.pdfs.length === 0) {
@@ -67,7 +63,7 @@ export class StatikpageComponent implements OnInit {
       // Create a downloadable link
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'modified.pdf'; // Set the desired filename
+      link.download = 'GenerierteStatik.pdf'; // Set the desired filename
 
       // Append the link to the DOM and trigger a click event to start the download
       document.body.appendChild(link);
@@ -198,23 +194,25 @@ export class StatikpageComponent implements OnInit {
         }
       );
   }
-  updatePDFsArray() {
-    this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
-      (response) => {
-        this.pdfs = response.files.map((file: any) => {
-          return {
-            id: file.id.toString(),
-            name: file.name,
-            filePath: file.filePath,
-            subpoints: file.subpoints,
-          };
-        });
-      },
-      (error) => {
-        console.error('updatePDFSARRAYERROR', error);
-      }
-    );
+  async updatePDFsArray(): Promise<void> {
+    try {
+      const response = await this.pdfHttpService
+        .getPdfbyProject(this.projectName)
+        .toPromise();
+
+      this.pdfs = response.files.map((file: any) => {
+        return {
+          id: file.id.toString(),
+          name: file.name,
+          filePath: file.filePath,
+          subpoints: file.subpoints,
+        };
+      });
+    } catch (error) {
+      console.error('updatePDFSARRAYERROR', error);
+    }
   }
+
   getPdfbyProject() {
     this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
       (response) => {
@@ -239,30 +237,60 @@ export class StatikpageComponent implements OnInit {
       }
     );
   }
-  addPdf(name: string, subpoints?: { name: string; file: string }[]): void {
-    this.pdfHttpService.createPDF(name, this.projectName).subscribe(
-      (response) => {
-        console.log('PDF created');
-        this.updatePDFsArray();
-      },
-      (error) => {
-        console.error('Error creating PDF:', error);
-      }
-    );
+  async addPdf(
+    name: string,
+    subpoints?: { name: string; file: string }[]
+  ): Promise<PDFModel> {
+    try {
+      const response = await this.pdfHttpService
+        .createPDF(name, this.projectName)
+        .toPromise();
+      console.log('PDF created:', response);
+
+      // Assuming response contains information about the created PDF
+      const createdPdf: PDFModel = {
+        id: response.id.toString(),
+        name: response.name,
+        filePath: response.filePath,
+        projectName: response.projectName,
+      };
+
+      console.log(createdPdf);
+      await this.updatePDFsArray();
+
+      return createdPdf;
+    } catch (error) {
+      console.error('Error creating PDF:', error);
+      throw error; // Re-throw the error to be handled by the calling code
+    }
   }
 
   getColorForPdf(pdf: any): string {
     return pdf.filePath ? 'black' : '#794853';
   }
 
-  generateTableOfContents(): void {
-    this.pdfService.generateTableOfContents(this.pdfs);
+  async generateTableOfContents(
+    inhaltsverzeichnissPdf: PDFModel
+  ): Promise<void> {
+    this.pdfService.generateTableOfContents(this.pdfs, inhaltsverzeichnissPdf);
   }
 
-  generateDefaultPDFs(): void {
-    this.addPdf('Deckblatt');
-    this.addPdf('Inhaltsverzeichniss');
-    this.updatePDFsArray();
+  async generateDefaultPDFs(): Promise<void> {
+    try {
+      // Create 'Deckblatt' PDF
+      await this.addPdf('Deckblatt');
+
+      // Create 'Inhaltsverzeichniss' PDF and get the returned PDFModel
+      const inhaltsverzeichnissPdf: PDFModel = await this.addPdf(
+        'Inhaltsverzeichniss'
+      );
+
+      await this.generateTableOfContents(inhaltsverzeichnissPdf);
+      await this.updatePDFsArray();
+      console.log(this.pdfs);
+    } catch (error) {
+      console.error('Error in generateDefaultPDFs:', error);
+    }
   }
 
   drop(event: CdkDragDrop<string[]>) {

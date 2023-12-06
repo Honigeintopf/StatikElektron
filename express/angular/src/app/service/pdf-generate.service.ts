@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { PDFDocument, rgb } from 'pdf-lib';
 import pdfMake from 'pdfmake/build/pdfmake';
+import { PdfHttpService } from './pdfHttp.service';
+import { PDFModel } from '../views/statikpage/pdf-model.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -40,7 +42,7 @@ export class PdfGenerateService {
     // Save the modified PDF
     return await pdfDoc.save();
   }
-  constructor() {}
+  constructor(private pdfHttpService: PdfHttpService) {}
 
   getNumberOfPages(pdfBuffer: ArrayBuffer): Promise<number> {
     return PDFDocument.load(pdfBuffer).then((pdfDoc) => {
@@ -54,7 +56,8 @@ export class PdfGenerateService {
       name: string;
       file?: string;
       subpoints?: { name: string; file: string }[];
-    }[]
+    }[],
+    inhaltsverzeichnissPdf: PDFModel // Pass the Inhaltsverzeichniss PDF entry from the DB
   ): void {
     const content = [
       { text: 'Table of Contents', style: 'header' },
@@ -92,6 +95,32 @@ export class PdfGenerateService {
       },
     };
 
-    pdfMake.createPdf(documentDefinition).open();
+    // Create the PDF
+    const generatedPdf = pdfMake.createPdf(documentDefinition);
+
+    // Convert the generated PDF to a Blob
+    generatedPdf.getBlob(async (blob: Blob) => {
+      // Create a new File from the Blob
+      const generatedPdfFile = new File([blob], 'GeneratedPDF.pdf', {
+        type: 'application/pdf',
+      });
+
+      // Update the entry in the database with the new file using the updatePDF method
+      this.pdfHttpService
+        .updatePDF(
+          generatedPdfFile,
+          inhaltsverzeichnissPdf.id.toString(),
+          inhaltsverzeichnissPdf.projectName
+        )
+        .subscribe(
+          (response) => {
+            console.log('Inhaltsverzeichniss PDF updated:', response);
+            // Perform any additional actions after updating the entry
+          },
+          (error) => {
+            console.error('Error updating Inhaltsverzeichniss PDF:', error);
+          }
+        );
+    });
   }
 }
