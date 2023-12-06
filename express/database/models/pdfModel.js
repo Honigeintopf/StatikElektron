@@ -17,11 +17,15 @@ const PdfModel = sequelize.define("PdfModel", {
   absoluteFilePath: {
     type: DataTypes.STRING,
   },
+  positionInArray: {
+    type: DataTypes.NUMBER,
+    allowNull: false,
+  },
 });
 
 // Methods for creating and retrieving data
-PdfModel.createNewPdf = async (name, projectName) => {
-  return PdfModel.create({ name, projectName });
+PdfModel.createNewPdf = async (name, projectName, positionInArray) => {
+  return PdfModel.create({ name, projectName, positionInArray });
 };
 
 PdfModel.uploadPDF = async (id, filePath, projectName, absoluteFilePath) => {

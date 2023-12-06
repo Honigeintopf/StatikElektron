@@ -30,7 +30,7 @@ router.post("/upload", async (req, res) => {
 // Route to create a new PDF record
 router.post("/create", async (req, res) => {
   try {
-    const { name, projectName } = req.body;
+    const { name, projectName, positionInArray } = req.body;
 
     // Check if a PDF with the same name and project name already exists
     const existingPdf = await PdfModel.findByProjectAndName(projectName, name);
@@ -53,7 +53,11 @@ router.post("/create", async (req, res) => {
     }
 
     // Create the new PDF
-    const newPdf = await PdfModel.createNewPdf(name, projectName);
+    const newPdf = await PdfModel.createNewPdf(
+      name,
+      projectName,
+      positionInArray
+    );
     res.json(newPdf);
   } catch (error) {
     console.error("Error creating PDF:", error);
@@ -175,6 +179,30 @@ router.delete("/deleteFileOnly/:id", async (req, res) => {
     res.json({ message: "PDF deleted successfully" });
   } catch (error) {
     console.error("Error deleting PDF:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Update the server-side route
+router.put("/updatePositions/:projectName", async (req, res) => {
+  try {
+    const projectName = req.params.projectName;
+    const updatedPdfs = req.body.updatedPdfs;
+
+    // Update positions in the database for each PDF in the specified project
+    const updatePromises = updatedPdfs.map(async (updatedPdf) => {
+      const { id, newPosition } = updatedPdf;
+      return await PdfModel.update(
+        { positionInArray: newPosition },
+        { where: { id, projectName } }
+      );
+    });
+
+    await Promise.all(updatePromises);
+
+    res.json({ message: "Positions updated successfully" });
+  } catch (error) {
+    console.error("Error updating PDF positions:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

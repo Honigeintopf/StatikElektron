@@ -32,9 +32,17 @@ export class PdfHttpService {
     return this.http.get(files);
   }
 
-  createPDF(name: string, projectName: string): Observable<any> {
+  createPDF(
+    name: string,
+    projectName: string,
+    positionInArray: number
+  ): Observable<any> {
     const createEndpoint = `${this.apiUrl}/create`;
-    return this.http.post(createEndpoint, { name, projectName });
+    return this.http.post(createEndpoint, {
+      name,
+      projectName,
+      positionInArray,
+    });
   }
 
   deletePDF(id: string): Observable<any> {
@@ -57,5 +65,11 @@ export class PdfHttpService {
   deleteFileOnly(id: string): Observable<any> {
     const deleteEndpoint = `${this.apiUrl}/deleteFileOnly/${id}`;
     return this.http.delete(deleteEndpoint);
+  }
+
+  updatePdfPositions(projectName: string, updatedPdfs: any[]): Observable<any> {
+    const url = `${this.apiUrl}/updatePositions/${projectName}`;
+    const body = { updatedPdfs };
+    return this.http.put(url, body);
   }
 }

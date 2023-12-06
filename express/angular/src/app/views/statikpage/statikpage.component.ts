@@ -14,6 +14,8 @@ export class StatikpageComponent implements OnInit {
   pdfs: {
     id: string;
     name: string;
+    positionInArray: number;
+    projectName: string;
     filePath?: string;
     subpoints?: { name: string; file: string }[];
   }[] = [];
@@ -28,7 +30,9 @@ export class StatikpageComponent implements OnInit {
     private pdfService: PdfGenerateService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getPdfbyProject;
+  }
 
   async generateModifiedPdf() {
     if (!this.pdfs || this.pdfs.length === 0) {
@@ -206,6 +210,7 @@ export class StatikpageComponent implements OnInit {
           name: file.name,
           filePath: file.filePath,
           subpoints: file.subpoints,
+          positionInArray: file.positionInArray,
         };
       });
     } catch (error) {
@@ -243,7 +248,7 @@ export class StatikpageComponent implements OnInit {
   ): Promise<PDFModel> {
     try {
       const response = await this.pdfHttpService
-        .createPDF(name, this.projectName)
+        .createPDF(name, this.projectName, this.pdfs.length)
         .toPromise();
       console.log('PDF created:', response);
 
@@ -253,6 +258,7 @@ export class StatikpageComponent implements OnInit {
         name: response.name,
         filePath: response.filePath,
         projectName: response.projectName,
+        positionInArray: response.positionInArray,
       };
 
       console.log(createdPdf);
@@ -287,7 +293,6 @@ export class StatikpageComponent implements OnInit {
       const inhaltsverzeichnissPdf: PDFModel = await this.addPdf(
         'Inhaltsverzeichniss'
       );
-
       await this.generateTableOfContents(inhaltsverzeichnissPdf);
       await this.updatePDFsArray();
       console.log(this.pdfs);
@@ -298,6 +303,31 @@ export class StatikpageComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.pdfs, event.previousIndex, event.currentIndex);
+    this.pdfs.forEach((pdf, index) => {
+      pdf.positionInArray = index;
+    });
+    console.log(this.pdfs);
+    this.savePositionsToDatabase();
+  }
+
+  private savePositionsToDatabase(): void {
+    const updatedPdfs = this.pdfs
+      .filter((pdf) => pdf.projectName === this.projectName)
+      .map((pdf) => {
+        return { id: pdf.id, newPosition: pdf.positionInArray };
+      });
+
+    this.pdfHttpService
+      .updatePdfPositions(this.projectName, updatedPdfs)
+      .subscribe(
+        (response) => {
+          console.log('Positions updated successfully.', response);
+          // Perform any additional actions after updating positions
+        },
+        (error) => {
+          console.error('Error updating positions.', error);
+        }
+      );
   }
 
   toggleDragAndDrop(): void {

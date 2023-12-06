@@ -3,6 +3,7 @@ export interface PDFModel {
   name: string;
   filePath: string;
   projectName: string;
+  positionInArray: number;
   absoluteFilePath?: string;
   createdAt?: Date;
   updatedAt?: Date;
