@@ -252,7 +252,6 @@ export class StatikpageComponent implements OnInit {
         .toPromise();
       console.log('PDF created:', response);
 
-      // Assuming response contains information about the created PDF
       const createdPdf: PDFModel = {
         id: response.id.toString(),
         name: response.name,
@@ -311,11 +310,9 @@ export class StatikpageComponent implements OnInit {
   }
 
   private savePositionsToDatabase(): void {
-    const updatedPdfs = this.pdfs
-      .filter((pdf) => pdf.projectName === this.projectName)
-      .map((pdf) => {
-        return { id: pdf.id, newPosition: pdf.positionInArray };
-      });
+    const updatedPdfs = this.pdfs.map((pdf) => {
+      return { id: pdf.id, newPosition: pdf.positionInArray };
+    });
 
     this.pdfHttpService
       .updatePdfPositions(this.projectName, updatedPdfs)
