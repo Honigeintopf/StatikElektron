@@ -204,15 +204,20 @@ export class StatikpageComponent implements OnInit {
         .getPdfbyProject(this.projectName)
         .toPromise();
 
-      this.pdfs = response.files.map((file: any) => {
-        return {
-          id: file.id.toString(),
-          name: file.name,
-          filePath: file.filePath,
-          subpoints: file.subpoints,
-          positionInArray: file.positionInArray,
-        };
-      });
+      this.pdfs = response.files
+        .map((file: any) => {
+          return {
+            id: file.id.toString(),
+            name: file.name,
+            filePath: file.filePath,
+            subpoints: file.subpoints,
+            positionInArray: file.positionInArray,
+          };
+        })
+        .sort(
+          (a: { positionInArray: number }, b: { positionInArray: number }) =>
+            a.positionInArray - b.positionInArray
+        );
     } catch (error) {
       console.error('updatePDFSARRAYERROR', error);
     }
