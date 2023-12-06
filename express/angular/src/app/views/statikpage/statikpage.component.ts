@@ -252,11 +252,17 @@ export class StatikpageComponent implements OnInit {
   }
 
   getColorForPdf(pdf: any): string {
-    return pdf.filePath ? 'black' : 'red';
+    return pdf.filePath ? 'black' : '#794853';
   }
 
   generateTableOfContents(): void {
     this.pdfService.generateTableOfContents(this.pdfs);
+  }
+
+  generateDefaultPDFs(): void {
+    this.addPdf('Deckblatt');
+    this.addPdf('Inhaltsverzeichniss');
+    this.updatePDFsArray();
   }
 
   drop(event: CdkDragDrop<string[]>) {

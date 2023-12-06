@@ -27,9 +27,32 @@ router.post("/upload", async (req, res) => {
   }
 });
 
+// Route to create a new PDF record
 router.post("/create", async (req, res) => {
   try {
     const { name, projectName } = req.body;
+
+    // Check if a PDF with the same name and project name already exists
+    const existingPdf = await PdfModel.findByProjectAndName(projectName, name);
+
+    if (existingPdf) {
+      const existingFilePath = existingPdf.absoluteFilePath;
+      if (fs.existsSync(existingFilePath)) {
+        fs.unlinkSync(existingFilePath);
+        console.log("File deleted successfully:", existingFilePath);
+      }
+      await PdfModel.destroy({
+        where: {
+          id: existingPdf.id,
+        },
+      });
+
+      console.log(
+        `Existing PDF with name '${name}' and project '${projectName}' deleted.`
+      );
+    }
+
+    // Create the new PDF
     const newPdf = await PdfModel.createNewPdf(name, projectName);
     res.json(newPdf);
   } catch (error) {

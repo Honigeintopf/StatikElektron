@@ -51,4 +51,12 @@ PdfModel.updatePDF = async (id, filePath, projectName, absoluteFilePath) => {
   );
 };
 
+PdfModel.findByProjectAndName = async (projectName, name) => {
+  return PdfModel.findOne({
+    where: {
+      projectName: projectName,
+      name: name,
+    },
+  });
+};
 module.exports = PdfModel;
