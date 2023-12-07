@@ -3,6 +3,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import pdfMake from 'pdfmake/build/pdfmake';
 import { PdfHttpService } from './pdfHttp.service';
 import { PDFModel } from '../views/statikpage/pdf-model.interface';
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -46,8 +47,6 @@ export class PdfGenerateService {
 
   getNumberOfPages(pdfBuffer: ArrayBuffer): Promise<number> {
     return PDFDocument.load(pdfBuffer).then((pdfDoc) => {
-      console.log('Sind drinne');
-      console.log('Im Service', pdfDoc.getPageCount());
       return pdfDoc.getPageCount();
     });
   }
@@ -62,7 +61,7 @@ export class PdfGenerateService {
     return new Promise<void>(async (resolve, reject) => {
       try {
         const content = [
-          { text: 'Table of Contents', style: 'header' },
+          { text: 'Inhaltsverzeichniss', style: 'header' },
           { text: '\n', style: 'subheader' },
         ];
 
@@ -80,21 +79,23 @@ export class PdfGenerateService {
             });
           }
         });
-
-        const documentDefinition = {
+        const documentDefinition: TDocumentDefinitions = {
           content,
           styles: {
             header: {
               fontSize: 18,
               bold: true,
+              margin: [0, 0, 0, 10],
             },
             subheader: {
               fontSize: 14,
               bold: true,
+              margin: [0, 0, 0, 5],
             },
             'sub-subheader': {
               fontSize: 12,
-              italic: true,
+              italics: true,
+              margin: [0, 0, 0, 2],
             },
           },
         };
