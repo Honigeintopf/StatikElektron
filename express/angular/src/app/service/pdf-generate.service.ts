@@ -56,46 +56,59 @@ export class PdfGenerateService {
       file?: string;
       subpoints?: { name: string; file: string }[];
     }[],
-    inhaltsverzeichnissPdf: PDFModel // Pass the Inhaltsverzeichniss PDF entry from the DB
+    inhaltsverzeichnissPdf: PDFModel,
+    deckblattPdf: PDFModel
   ): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        const content = [
-          { text: 'Inhaltsverzeichniss', style: 'header' },
-          { text: '\n', style: 'subheader' },
-        ];
+        const content = [];
 
+        // Add the main Table of Contents definition
+        content.push({
+          toc: {
+            id: 'mainToc',
+            title: { text: 'Table of Contents', style: 'header' },
+          },
+        });
+
+        // Add regular content
         pdfs.forEach((pdf, index) => {
           const pdfText = `${index + 1}. ${pdf.name}`;
 
-          content.push({ text: pdfText, style: 'subheader' });
+          content.push({
+            text: pdfText,
+            style: 'subheader',
+            tocItem: 'mainToc',
+          });
 
           if (pdf.subpoints && pdf.subpoints.length > 0) {
             pdf.subpoints.forEach((subpoint, subIndex) => {
               const subpointText = `${index + 1}.${subIndex + 1} ${
                 subpoint.name
               }`;
-              content.push({ text: subpointText, style: 'sub-subheader' });
+              content.push({
+                text: subpointText,
+                style: 'sub-subheader',
+                tocItem: 'mainToc',
+              });
             });
           }
         });
-        const documentDefinition: TDocumentDefinitions = {
+
+        const documentDefinition = {
           content,
           styles: {
             header: {
               fontSize: 18,
               bold: true,
-              margin: [0, 0, 0, 10],
             },
             subheader: {
               fontSize: 14,
               bold: true,
-              margin: [0, 0, 0, 5],
             },
             'sub-subheader': {
               fontSize: 12,
-              italics: true,
-              margin: [0, 0, 0, 2],
+              italic: true,
             },
           },
         };
@@ -119,16 +132,45 @@ export class PdfGenerateService {
             )
             .toPromise();
 
-          console.log('Inhaltsverzeichniss PDF updated');
           // Perform any additional actions after updating the entry
 
           // Resolve the promise to indicate that the operation is complete
+          resolve();
+        });
+
+        //DECKBLATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+        const documentDefinitionDeckblatt = {
+          content: [],
+        };
+        const generatedPdfDeckblatt = pdfMake.createPdf(
+          documentDefinitionDeckblatt
+        );
+
+        generatedPdfDeckblatt.getBlob(async (blob: Blob) => {
+          const generatedPdfFileDeckblatt = new File(
+            [blob],
+            'GeneratedPDFDeckblatt.pdf',
+            {
+              type: 'application/pdf',
+            }
+          );
+
+          await this.pdfHttpService
+            .updatePDF(
+              generatedPdfFileDeckblatt,
+              deckblattPdf.id.toString(),
+              deckblattPdf.projectName
+            )
+            .toPromise();
+
           resolve();
         });
       } catch (error) {
         console.error('Error generating and updating PDF:', error);
         reject(error);
       }
+
+      console.log('Inhaltsverzeichniss PDF updated');
     });
   }
 }

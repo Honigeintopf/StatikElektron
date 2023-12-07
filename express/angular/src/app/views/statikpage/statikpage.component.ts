@@ -297,25 +297,29 @@ export class StatikpageComponent implements OnInit {
     return pdf.filePath ? 'black' : '#794853';
   }
 
-  async generateTableOfContents(
-    inhaltsverzeichnissPdf: PDFModel
+  async generateTableOfContentsandDeckblatt(
+    inhaltsverzeichnissPdf: PDFModel,
+    deckblattPdf: PDFModel
   ): Promise<void> {
     await this.pdfService.generateTableOfContents(
       this.pdfs,
-      inhaltsverzeichnissPdf
+      inhaltsverzeichnissPdf,
+      deckblattPdf
     );
   }
 
   async generateDefaultPDFs(): Promise<void> {
     try {
       // Create 'Deckblatt' PDF
-      await this.addPdf('Deckblatt');
-
+      const DeckblattPdf: PDFModel = await this.addPdf('Deckblatt');
       // Create 'Inhaltsverzeichniss' PDF and get the returned PDFModel
       const inhaltsverzeichnissPdf: PDFModel = await this.addPdf(
         'Inhaltsverzeichniss'
       );
-      await this.generateTableOfContents(inhaltsverzeichnissPdf);
+      await this.generateTableOfContentsandDeckblatt(
+        inhaltsverzeichnissPdf,
+        DeckblattPdf
+      );
       await this.updatePDFsArray();
       console.log(this.pdfs);
     } catch (error) {
