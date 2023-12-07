@@ -80,15 +80,6 @@ export class StatikpageComponent implements OnInit {
       console.error('Error generating modified PDF:', error);
     }
   }
-
-  private async loadPdf(filePath: string): Promise<ArrayBuffer> {
-    const response = await fetch(filePath);
-    if (!response.ok) {
-      throw new Error(`Failed to load PDF from ${filePath}`);
-    }
-
-    return await response.arrayBuffer();
-  }
   private async appendPdfToDocument(
     pdfDoc: PDFDocument,
     pdfBuffer: ArrayBuffer,
@@ -120,6 +111,14 @@ export class StatikpageComponent implements OnInit {
         height: scaledHeight,
       });
     }
+  }
+  private async loadPdf(filePath: string): Promise<ArrayBuffer> {
+    const response = await fetch(filePath);
+    if (!response.ok) {
+      throw new Error(`Failed to load PDF from ${filePath}`);
+    }
+
+    return await response.arrayBuffer();
   }
 
   onFileSelected(event: any, pdfId: string, edit: boolean) {

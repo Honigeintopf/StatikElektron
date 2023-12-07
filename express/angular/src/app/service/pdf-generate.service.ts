@@ -139,8 +139,15 @@ export class PdfGenerateService {
         });
 
         //DECKBLATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-        const documentDefinitionDeckblatt = {
-          content: [],
+        const documentDefinitionDeckblatt: TDocumentDefinitions = {
+          content: [
+            {
+              text: 'Deckblatt', // Text content
+              fontSize: 30, // Font size
+              bold: true, // Bold style
+              alignment: 'center', // Center the text
+            },
+          ],
         };
         const generatedPdfDeckblatt = pdfMake.createPdf(
           documentDefinitionDeckblatt
