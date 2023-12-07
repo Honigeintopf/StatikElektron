@@ -69,14 +69,14 @@ export class PdfGenerateService {
       const currentDate = new Date().toLocaleDateString();
       const pageNumber = 1;
 
-      page.drawText(`Date: ${currentDate}`, {
+      page.drawText(`Datum: ${currentDate}`, {
         x: width - 120,
         y: height - headerHeight + 15,
         size: 12,
         color: rgb(0, 0, 0),
       });
 
-      page.drawText(`Page: ${pageNumber}`, {
+      page.drawText(`Seite: ${pageNumber}`, {
         x: width - 120,
         y: height - headerHeight + 30,
         size: 12,
@@ -107,35 +107,25 @@ export class PdfGenerateService {
         const content = [];
 
         // Add the main Table of Contents definition
-        content.push({
+        const tocDefinition = {
           toc: {
             id: 'mainToc',
-            title: { text: 'Table of Contents', style: 'header' },
+            title: { text: 'Inhaltsverzeichniss', style: 'header' },
           },
-        });
+        };
+        content.push(tocDefinition);
 
-        // Add regular content
+        // Add regular content (PDFs) to the TOC
         pdfs.forEach((pdf, index) => {
           const pdfText = `${index + 1}. ${pdf.name}`;
 
-          content.push({
+          const pdfEntry = {
             text: pdfText,
             style: 'subheader',
-            tocItem: 'mainToc',
-          });
+            tocItem: `mainToc${index}`, // Use a unique ID for each TOC entry
+          };
 
-          if (pdf.subpoints && pdf.subpoints.length > 0) {
-            pdf.subpoints.forEach((subpoint, subIndex) => {
-              const subpointText = `${index + 1}.${subIndex + 1} ${
-                subpoint.name
-              }`;
-              content.push({
-                text: subpointText,
-                style: 'sub-subheader',
-                tocItem: 'mainToc',
-              });
-            });
-          }
+          content.push(pdfEntry);
         });
 
         const documentDefinition = {
@@ -181,7 +171,7 @@ export class PdfGenerateService {
           resolve();
         });
 
-        //DECKBLATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+        // DECKBLATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
         const documentDefinitionDeckblatt: TDocumentDefinitions = {
           content: [
             {
