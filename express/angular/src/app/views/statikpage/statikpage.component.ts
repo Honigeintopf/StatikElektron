@@ -252,10 +252,34 @@ export class StatikpageComponent implements OnInit {
     subpoints?: { name: string; file: string }[]
   ): Promise<PDFModel> {
     try {
-      const response = await this.pdfHttpService
-        .createPDF(name, this.projectName, this.pdfs.length)
-        .toPromise();
-      console.log('PDF created:', response);
+      let positionInArray = 0; // Default position at the beginning
+      let response;
+      // Check if it's one of the default PDFs
+      if (name === 'Deckblatt') {
+        positionInArray = 0;
+      } else if (name === 'Inhaltsverzeichniss') {
+        positionInArray = 1;
+      }
+
+      // Update positions if there are existing PDFs
+      if (this.pdfs.length > 0) {
+        // Shift existing PDFs to make room for the new PDF
+        this.pdfs.forEach((pdf) => {
+          pdf.positionInArray += 1;
+        });
+      }
+      if (name === 'Deckblatt' || name === 'Inhaltsverzeichniss') {
+        response = await this.pdfHttpService
+          .createPDF(name, this.projectName, positionInArray)
+          .toPromise();
+        console.log('PDF created:', response);
+      } else {
+        response = await this.pdfHttpService
+          .createPDF(name, this.projectName, this.pdfs.length)
+          .toPromise();
+
+        console.log('PDF created:', response);
+      }
 
       const createdPdf: PDFModel = {
         id: response.id.toString(),
