@@ -31,7 +31,8 @@ export class StatikpageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getPdfbyProject;
+    this.addPdf('Deckblatt');
+    this.addPdf('Inhaltsverzeichniss');
   }
 
   async generateModifiedPdf() {
@@ -261,13 +262,6 @@ export class StatikpageComponent implements OnInit {
         positionInArray = 1;
       }
 
-      // Update positions if there are existing PDFs
-      if (this.pdfs.length > 0) {
-        // Shift existing PDFs to make room for the new PDF
-        this.pdfs.forEach((pdf) => {
-          pdf.positionInArray += 1;
-        });
-      }
       if (name === 'Deckblatt' || name === 'Inhaltsverzeichniss') {
         response = await this.pdfHttpService
           .createPDF(name, this.projectName, positionInArray)
