@@ -11,36 +11,79 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 export class PdfGenerateService {
   async addHeaderToPdf(
     originalPdfBuffer: ArrayBuffer,
-    headerText: string
+    project: string,
+    bauteil: string,
+    imageFileName: string
   ): Promise<ArrayBuffer> {
     const pdfDoc = await PDFDocument.load(originalPdfBuffer);
     const pages = pdfDoc.getPages();
-    console.log('Pages');
 
-    // Add header to each page
+    // Load the image from the assets folder
+    const imagePath = `./assets/91001.png`;
+    const imageResponse = await fetch(imagePath);
+    const imageBlob = await imageResponse.blob();
+    const imageBytes = await new Response(imageBlob).arrayBuffer();
+
+    // Create a PDFImage object from the image data
+    const image = await pdfDoc.embedPng(imageBytes);
+
     for (const page of pages) {
       const { width, height } = page.getSize();
-      const headerHeight = 50; // Set the height of your header
+      const headerHeight = 80;
 
-      // Add a rectangle as a header
       page.drawRectangle({
         x: 0,
         y: height - headerHeight,
         width,
         height: headerHeight,
-        color: rgb(0.8, 0.8, 0.8), // Set the color of your header
+        color: rgb(0.8, 0.8, 0.8),
       });
 
-      // Add text to the header
-      page.drawText(headerText, {
+      page.drawText(`Projekt: ${project}`, {
         x: 20,
-        y: height - headerHeight + 15, // Adjust the position of your text
-        size: 12, // Set the font size of your text
-        color: rgb(0, 0, 0), // Set the color of your text
+        y: height - headerHeight + 15,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
+
+      page.drawText(`Bauteil: ${bauteil}`, {
+        x: 20,
+        y: height - headerHeight + 30,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
+
+      const imageWidth = 50;
+      const imageHeight = 50;
+      const imageX = width / 3;
+      const imageY = height - headerHeight + 15;
+
+      // Use the embedded image object in drawImage
+      page.drawImage(image, {
+        x: imageX,
+        y: imageY,
+        width: imageWidth,
+        height: imageHeight,
+      });
+
+      const currentDate = new Date().toLocaleDateString();
+      const pageNumber = 1;
+
+      page.drawText(`Date: ${currentDate}`, {
+        x: width - 120,
+        y: height - headerHeight + 15,
+        size: 12,
+        color: rgb(0, 0, 0),
+      });
+
+      page.drawText(`Page: ${pageNumber}`, {
+        x: width - 120,
+        y: height - headerHeight + 30,
+        size: 12,
+        color: rgb(0, 0, 0),
       });
     }
 
-    // Save the modified PDF
     return await pdfDoc.save();
   }
   constructor(private pdfHttpService: PdfHttpService) {}

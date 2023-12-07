@@ -59,7 +59,9 @@ export class StatikpageComponent implements OnInit {
     try {
       const modifiedPdfBuffer = await this.pdfService.addHeaderToPdf(
         await pdfDoc.save(),
-        headerText
+        this.projectName,
+        'Bauteil Test-1',
+        'Bauteil Test-1'
       );
 
       // Create a Blob from the modified PDF buffer
