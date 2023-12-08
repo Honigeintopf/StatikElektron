@@ -199,7 +199,8 @@ export class StatikpageComponent implements OnInit {
       );
 
       console.log('Numpages upload', numPages);
-      // Upload the PDF
+
+      // Upload the PDF with the correct numPages value
       await this.pdfHttpService
         .uploadPdf(selectedFile, pdfID, this.projectName, numPages.toString())
         .toPromise();

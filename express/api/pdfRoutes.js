@@ -10,7 +10,7 @@ const router = express.Router();
 // Route to create a new PDF record
 router.post("/upload", async (req, res) => {
   try {
-    const { id, projectName, uploadFilePath } = req.body;
+    const { id, projectName, uploadFilePath, numPages } = req.body;
     console.log("The ID", id);
     const filePath = uploadFilePath;
     const absoluteFilePath = req.file.path;
@@ -18,7 +18,8 @@ router.post("/upload", async (req, res) => {
       id,
       filePath,
       projectName,
-      absoluteFilePath
+      absoluteFilePath,
+      numPages
     );
     res.json(newPdf);
   } catch (error) {
