@@ -73,7 +73,9 @@
           <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
             <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
             <mat-icon>description</mat-icon>
-            <p style="margin-bottom: 0px">{{ pdf.name }}</p>
+            <p style="margin-bottom: 0px">
+              {{ pdf.name }} - {{ pdf.numPagesCurrent }}
+            </p>
           </div>
         </div>
       </div>
@@ -86,7 +88,9 @@
             [style.color]="getColorForPdf(pdf)"
           >
             <mat-icon>description</mat-icon>
-            <p style="margin-bottom: 0px">{{ pdf.name }}</p>
+            <p style="margin-bottom: 0px">
+              {{ pdf.name }} - {{ pdf.numPagesCurrent }}
+            </p>
             <!-- Use a button to trigger the file input -->
             <div *ngIf="pdf.filePath === null">
               <button mat-icon-button (click)="fileInput.click()">

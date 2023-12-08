@@ -16,9 +16,12 @@ export class StatikpageComponent implements OnInit {
     name: string;
     positionInArray: number;
     projectName: string;
+    numPages: number;
     filePath?: string;
     subpoints?: { name: string; file: string }[];
+    numPagesCurrent: number;
   }[] = [];
+  totalNumPages: number = 0;
   isDragAndDropEnabled: boolean = true;
   selectedFiles: { [pdfId: string]: File } = {};
   projectName: string = 'Statik1';
@@ -227,12 +230,14 @@ export class StatikpageComponent implements OnInit {
             filePath: file.filePath,
             subpoints: file.subpoints,
             positionInArray: file.positionInArray,
+            numPages: file.numPages,
           };
         })
         .sort(
           (a: { positionInArray: number }, b: { positionInArray: number }) =>
             a.positionInArray - b.positionInArray
         );
+      this.updateNumPages();
     } catch (error) {
       console.error('updatePDFSARRAYERROR', error);
     }
@@ -348,6 +353,7 @@ export class StatikpageComponent implements OnInit {
     });
     console.log(this.pdfs);
     this.savePositionsToDatabase();
+    this.updateNumPages();
   }
 
   private savePositionsToDatabase(): void {
@@ -375,5 +381,28 @@ export class StatikpageComponent implements OnInit {
   handleButtonClick(pdf: any): void {
     // Handle the button click for the specific PDF
     console.log('Button clicked for:');
+  }
+
+  private calculateTotalNumPages() {
+    this.totalNumPages = this.pdfs.reduce((sum, pdf) => sum + pdf.numPages, 0);
+  }
+
+  private calculateCurrentNumPages(pdf: any): number {
+    const previousPdfs = this.pdfs.filter(
+      (p) => p.positionInArray < pdf.positionInArray
+    );
+    return pdf.numPages + previousPdfs.reduce((sum, p) => sum + p.numPages, 0);
+  }
+
+  private updateCurrentNumPages() {
+    this.pdfs.forEach((pdf) => {
+      pdf.numPagesCurrent = this.calculateCurrentNumPages(pdf);
+    });
+  }
+
+  // Call this function whenever there's a change in the PDF array
+  private updateNumPages() {
+    this.calculateTotalNumPages();
+    this.updateCurrentNumPages();
   }
 }
