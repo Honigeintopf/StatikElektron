@@ -106,42 +106,51 @@ export class PdfGenerateService {
       try {
         const content = [];
 
+        // Add the header
+        const header = {
+          text: 'Inhaltsverzeichniss',
+          style: 'header', // Apply a style if needed
+        };
+        content.push(header);
+
         // Add the main Table of Contents definition
         const tocDefinition = {
-          toc: {
-            id: 'mainToc',
-            title: { text: 'Inhaltsverzeichniss', style: 'header' },
-          },
+          columns: [
+            {
+              width: '75%', // Adjust width as needed
+              stack: pdfs.map((pdf, index) => ` ${pdf.name}`),
+            },
+            {
+              width: '*', // Adjust width as needed
+              stack: ['1'], // Hardcoded page number for now
+            },
+          ],
+          columnGap: 20, // Adjust the gap between columns
         };
+
         content.push(tocDefinition);
 
-        // Add regular content (PDFs) to the TOC
-        pdfs.forEach((pdf, index) => {
-          const pdfText = `${index + 1}. ${pdf.name}`;
-
-          const pdfEntry = {
-            text: pdfText,
-            style: 'subheader',
-            tocItem: `mainToc${index}`, // Use a unique ID for each TOC entry
-          };
-
-          content.push(pdfEntry);
+        // Add a placeholder page number for the TOC
+        content.push({
+          text: ' ', // Add a space as a placeholder
         });
 
-        const documentDefinition = {
+        const documentDefinition: TDocumentDefinitions = {
           content,
           styles: {
             header: {
-              fontSize: 18,
+              fontSize: 30,
               bold: true,
+              margin: [0, 0, 0, 40],
             },
             subheader: {
               fontSize: 14,
               bold: true,
+              margin: [0, 0, 0, 10],
             },
             'sub-subheader': {
               fontSize: 12,
-              italic: true,
+              italics: true,
             },
           },
         };
@@ -161,7 +170,8 @@ export class PdfGenerateService {
             .updatePDF(
               generatedPdfFile,
               inhaltsverzeichnissPdf.id.toString(),
-              inhaltsverzeichnissPdf.projectName
+              inhaltsverzeichnissPdf.projectName,
+              '1'
             )
             .toPromise();
 
@@ -199,7 +209,8 @@ export class PdfGenerateService {
             .updatePDF(
               generatedPdfFileDeckblatt,
               deckblattPdf.id.toString(),
-              deckblattPdf.projectName
+              deckblattPdf.projectName,
+              '1'
             )
             .toPromise();
 

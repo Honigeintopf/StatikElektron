@@ -151,36 +151,39 @@ export class StatikpageComponent implements OnInit {
     }
   }
 
-  updatePdf(pdfID: string) {
+  async updatePdf(pdfID: string) {
     const selectedFile = this.selectedFiles[pdfID];
     if (!selectedFile) {
       console.error('No file selected for PDF with ID:', pdfID);
       return;
     }
 
-    this.pdfHttpService.deleteFileOnly(pdfID).subscribe(
-      (response) => {
-        console.log('PDF deleted successfully', response);
-        // Perform any additional actions after deletion
-      },
-      (error) => {
-        console.error('Error deleting PDF:', error);
-      }
-    );
-    this.pdfHttpService
-      .updatePDF(selectedFile, pdfID, this.projectName)
-      .subscribe(
-        (response) => {
-          console.log('PDF uploaded:', response);
-          this.updatePDFsArray();
-        },
-        (error) => {
-          console.error('Error uploading PDF:', error);
-        }
+    try {
+      // Delete the existing PDF
+      await this.pdfHttpService.deleteFileOnly(pdfID).toPromise();
+      console.log('PDF deleted successfully');
+
+      // Calculate the number of pages
+      const selectedFileArrayBuffer = await selectedFile.arrayBuffer();
+      const numPages = await this.pdfService.getNumberOfPages(
+        selectedFileArrayBuffer
       );
+
+      console.log('Numpags update', numPages);
+      // Update the PDF with the new file and number of pages
+      await this.pdfHttpService
+        .updatePDF(selectedFile, pdfID, this.projectName, numPages.toString())
+        .toPromise();
+      console.log('PDF updated successfully');
+
+      // Update the array of PDFs
+      this.updatePDFsArray();
+    } catch (error) {
+      console.error('Error updating PDF:', error);
+    }
   }
 
-  uploadPdf(pdfID: string) {
+  async uploadPdf(pdfID: string) {
     const selectedFile = this.selectedFiles[pdfID];
 
     if (!selectedFile) {
@@ -188,18 +191,27 @@ export class StatikpageComponent implements OnInit {
       return;
     }
 
-    this.pdfHttpService
-      .uploadPdf(selectedFile, pdfID, this.projectName)
-      .subscribe(
-        (response) => {
-          console.log('PDF uploaded:', response);
-          this.updatePDFsArray();
-        },
-        (error) => {
-          console.error('Error uploading PDF:', error);
-        }
+    try {
+      // Get the number of pages
+      const selectedFileArrayBuffer = await selectedFile.arrayBuffer();
+      const numPages = await this.pdfService.getNumberOfPages(
+        selectedFileArrayBuffer
       );
+
+      console.log('Numpages upload', numPages);
+      // Upload the PDF
+      await this.pdfHttpService
+        .uploadPdf(selectedFile, pdfID, this.projectName, numPages.toString())
+        .toPromise();
+      console.log('PDF uploaded successfully');
+
+      // Update the array of PDFs
+      this.updatePDFsArray();
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+    }
   }
+
   async updatePDFsArray(): Promise<void> {
     try {
       const response = await this.pdfHttpService
@@ -265,12 +277,12 @@ export class StatikpageComponent implements OnInit {
 
       if (name === 'Deckblatt' || name === 'Inhaltsverzeichniss') {
         response = await this.pdfHttpService
-          .createPDF(name, this.projectName, positionInArray)
+          .createPDF(name, this.projectName, positionInArray, '1')
           .toPromise();
         console.log('PDF created:', response);
       } else {
         response = await this.pdfHttpService
-          .createPDF(name, this.projectName, this.pdfs.length)
+          .createPDF(name, this.projectName, this.pdfs.length, '1')
           .toPromise();
 
         console.log('PDF created:', response);

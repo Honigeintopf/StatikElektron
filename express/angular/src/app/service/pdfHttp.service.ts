@@ -13,7 +13,12 @@ export class PdfHttpService {
 
   constructor(private http: HttpClient) {}
 
-  uploadPdf(file: File, id: string, projectName: string): Observable<any> {
+  uploadPdf(
+    file: File,
+    id: string,
+    projectName: string,
+    numPages: string
+  ): Observable<any> {
     const formData = new FormData();
     const newFileName = `${projectName}-${file.name}`;
     const uploadFilePath = `/assets/allPdfUploads/${newFileName}`;
@@ -21,6 +26,7 @@ export class PdfHttpService {
     formData.append('id', id);
     formData.append('projectName', projectName);
     formData.append('uploadFilePath', uploadFilePath);
+    formData.append('numPages', numPages);
     const createEndpoint = `${this.apiUrl}/upload`;
 
     return this.http.post(createEndpoint, formData);
@@ -35,13 +41,16 @@ export class PdfHttpService {
   createPDF(
     name: string,
     projectName: string,
-    positionInArray: number
+    positionInArray: number,
+    numPages: string
   ): Observable<any> {
     const createEndpoint = `${this.apiUrl}/create`;
+
     return this.http.post(createEndpoint, {
       name,
       projectName,
       positionInArray,
+      numPages,
     });
   }
 
@@ -50,7 +59,12 @@ export class PdfHttpService {
     return this.http.delete(deleteEndpoint);
   }
 
-  updatePDF(file: File, id: string, projectName: string): Observable<any> {
+  updatePDF(
+    file: File,
+    id: string,
+    projectName: string,
+    numPages: string
+  ): Observable<any> {
     const formData = new FormData();
     const newFileName = `${projectName}-${file.name}`;
     const uploadFilePath = `/assets/allPdfUploads/${newFileName}`;
@@ -58,6 +72,7 @@ export class PdfHttpService {
     formData.append('id', id);
     formData.append('projectName', projectName);
     formData.append('uploadFilePath', uploadFilePath);
+    formData.append('numPages', numPages);
     const updateEndpoint = `${this.apiUrl}/update/${id}`;
     return this.http.put(updateEndpoint, formData);
   }

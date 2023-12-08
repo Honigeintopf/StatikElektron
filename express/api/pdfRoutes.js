@@ -30,7 +30,7 @@ router.post("/upload", async (req, res) => {
 // Route to create a new PDF record
 router.post("/create", async (req, res) => {
   try {
-    const { name, projectName, positionInArray } = req.body;
+    const { name, projectName, positionInArray, numPages } = req.body;
 
     // Check if a PDF with the same name and project name already exists
     const existingPdf = await PdfModel.findByProjectAndName(projectName, name);
@@ -56,7 +56,8 @@ router.post("/create", async (req, res) => {
     const newPdf = await PdfModel.createNewPdf(
       name,
       projectName,
-      positionInArray
+      positionInArray,
+      numPages
     );
     res.json(newPdf);
   } catch (error) {
@@ -140,7 +141,7 @@ router.delete("/delete/:id", async (req, res) => {
 router.put("/update/:id", async (req, res) => {
   try {
     const pdfId = req.params.id;
-    const { projectName, uploadFilePath } = req.body;
+    const { projectName, uploadFilePath, numPages } = req.body;
     const filePath = uploadFilePath;
     const absoluteFilePath = req.file.path;
 
@@ -149,7 +150,8 @@ router.put("/update/:id", async (req, res) => {
       pdfId,
       filePath,
       projectName,
-      absoluteFilePath
+      absoluteFilePath,
+      numPages
     );
 
     res.json(updatedPdf);

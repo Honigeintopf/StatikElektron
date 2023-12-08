@@ -21,16 +21,31 @@ const PdfModel = sequelize.define("PdfModel", {
     type: DataTypes.NUMBER,
     allowNull: false,
   },
+  numPages: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 // Methods for creating and retrieving data
-PdfModel.createNewPdf = async (name, projectName, positionInArray) => {
-  return PdfModel.create({ name, projectName, positionInArray });
+PdfModel.createNewPdf = async (
+  name,
+  projectName,
+  positionInArray,
+  numPages
+) => {
+  return PdfModel.create({ name, projectName, positionInArray, numPages });
 };
 
-PdfModel.uploadPDF = async (id, filePath, projectName, absoluteFilePath) => {
+PdfModel.uploadPDF = async (
+  id,
+  filePath,
+  projectName,
+  absoluteFilePath,
+  numPages
+) => {
   return PdfModel.update(
-    { filePath, absoluteFilePath },
+    { filePath, absoluteFilePath, numPages },
     { where: { id, projectName } }
   );
 };
@@ -48,9 +63,15 @@ PdfModel.getAllPdfsByProjectName = async (projectName) => {
   return files;
 };
 
-PdfModel.updatePDF = async (id, filePath, projectName, absoluteFilePath) => {
+PdfModel.updatePDF = async (
+  id,
+  filePath,
+  projectName,
+  absoluteFilePath,
+  numPages
+) => {
   return PdfModel.update(
-    { filePath, absoluteFilePath },
+    { filePath, absoluteFilePath, numPages },
     { where: { id, projectName } }
   );
 };
