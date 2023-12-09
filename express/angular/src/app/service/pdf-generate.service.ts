@@ -39,12 +39,14 @@ export class PdfGenerateService {
             const { width, height } = page.getSize();
             const headerHeight = 80;
 
-            page.drawRectangle({
-              x: 0,
-              y: height - headerHeight,
-              width,
-              height: headerHeight,
-              color: rgb(0.8, 0.8, 0.8),
+            const lineY = height - headerHeight;
+            const lineWidth = width;
+            const lineHeight = 2; // Adjust this value as needed
+            page.drawLine({
+              start: { x: 0, y: lineY },
+              end: { x: lineWidth, y: lineY },
+              color: rgb(0, 0, 0),
+              thickness: lineHeight,
             });
 
             page.drawText(`Projekt: ${project}`, {
@@ -54,15 +56,17 @@ export class PdfGenerateService {
               color: rgb(0, 0, 0),
             });
 
-            page.drawText(`Bauteil: ${bauteil}`, {
-              x: 20,
-              y: height - headerHeight + 30,
-              size: 12,
-              color: rgb(0, 0, 0),
-            });
+            if (bauteil !== null) {
+              page.drawText(`Bauteil: ${bauteil}`, {
+                x: 20,
+                y: height - headerHeight + 30,
+                size: 12,
+                color: rgb(0, 0, 0),
+              });
+            }
             const imageWidth = 50;
             const imageHeight = 50;
-            const imageX = width / 3;
+            const imageX = (width - imageWidth) / 2;
             const imageY = height - headerHeight + 15;
             page.drawImage(image, {
               x: imageX,
