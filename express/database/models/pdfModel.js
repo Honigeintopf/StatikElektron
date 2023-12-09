@@ -25,6 +25,12 @@ const PdfModel = sequelize.define("PdfModel", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  bauteil: {
+    type: DataTypes.STRING,
+  },
+  range: {
+    type: DataTypes.NUMBER,
+  },
 });
 
 // Methods for creating and retrieving data
@@ -34,7 +40,12 @@ PdfModel.createNewPdf = async (
   positionInArray,
   numPages
 ) => {
-  return PdfModel.create({ name, projectName, positionInArray, numPages });
+  return PdfModel.create({
+    name,
+    projectName,
+    positionInArray,
+    numPages,
+  });
 };
 
 PdfModel.uploadPDF = async (

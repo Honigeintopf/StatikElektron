@@ -4,6 +4,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PdfGenerateService } from 'src/app/service/pdf-generate.service';
 import { PDFDocument, PDFEmbeddedPage } from 'pdf-lib';
 import { PDFModel } from './pdf-model.interface';
+import { MatDialog } from '@angular/material/dialog';
+import { BauteildialogComponent } from 'src/app/dialog/bauteildialog/bauteildialog.component';
 @Component({
   selector: 'app-statikpage',
   templateUrl: './statikpage.component.html',
@@ -19,8 +21,10 @@ export class StatikpageComponent implements OnInit {
     numPages: number;
     filePath?: string;
     subpoints?: { name: string; file: string }[];
-    numPagesCurrent: number;
+    bauteil?: string; // Add this field with nullable type
+    range?: { start: number; end: number };
   }[] = [];
+
   totalNumPages: number = 0;
   isDragAndDropEnabled: boolean = true;
   selectedFiles: { [pdfId: string]: File } = {};
@@ -30,7 +34,8 @@ export class StatikpageComponent implements OnInit {
 
   constructor(
     private pdfHttpService: PdfHttpService,
-    private pdfService: PdfGenerateService
+    private pdfService: PdfGenerateService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -44,47 +49,38 @@ export class StatikpageComponent implements OnInit {
       return;
     }
 
-    const pdfDoc = await PDFDocument.create();
+    try {
+      const pdfDoc = await PDFDocument.create();
 
-    for (const pdf of this.pdfs) {
-      if (pdf.filePath) {
-        try {
-          const pdfBuffer = await this.loadPdf(pdf.filePath);
-          await this.appendPdfToDocument(pdfDoc, pdfBuffer);
-        } catch (error) {
-          console.error(`Error loading PDF from ${pdf.filePath}:`, error);
+      for (const pdf of this.pdfs) {
+        if (pdf.filePath) {
+          try {
+            const pdfBuffer = await this.loadPdf(pdf.filePath);
+            await this.appendPdfToDocument(pdfDoc, pdfBuffer);
+          } catch (error) {
+            console.error(`Error loading PDF from ${pdf.filePath}:`, error);
+          }
         }
       }
-    }
 
-    const headerText = 'Your Custom Header';
-
-    try {
       const modifiedPdfBuffer = await this.pdfService.addHeaderToPdf(
         await pdfDoc.save(),
-        this.projectName,
-        'Bauteil Test-1',
-        'Bauteil Test-1'
+        this.pdfs,
+        this.projectName
       );
 
-      // Create a Blob from the modified PDF buffer
       const blob = new Blob([modifiedPdfBuffer], { type: 'application/pdf' });
-
-      // Create a downloadable link
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'GenerierteStatik.pdf'; // Set the desired filename
-
-      // Append the link to the DOM and trigger a click event to start the download
+      link.download = 'GenerierteStatik.pdf';
       document.body.appendChild(link);
       link.click();
-
-      // Remove the link from the DOM
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error generating modified PDF:', error);
     }
   }
+
   private async appendPdfToDocument(
     pdfDoc: PDFDocument,
     pdfBuffer: ArrayBuffer,
@@ -164,7 +160,6 @@ export class StatikpageComponent implements OnInit {
     try {
       // Delete the existing PDF
       await this.pdfHttpService.deleteFileOnly(pdfID).toPromise();
-      console.log('PDF deleted successfully');
 
       // Calculate the number of pages
       const selectedFileArrayBuffer = await selectedFile.arrayBuffer();
@@ -172,12 +167,10 @@ export class StatikpageComponent implements OnInit {
         selectedFileArrayBuffer
       );
 
-      console.log('Numpags update', numPages);
       // Update the PDF with the new file and number of pages
       await this.pdfHttpService
         .updatePDF(selectedFile, pdfID, this.projectName, numPages.toString())
         .toPromise();
-      console.log('PDF updated successfully');
 
       // Update the array of PDFs
       this.updatePDFsArray();
@@ -201,13 +194,10 @@ export class StatikpageComponent implements OnInit {
         selectedFileArrayBuffer
       );
 
-      console.log('Numpages upload', numPages);
-
       // Upload the PDF with the correct numPages value
       await this.pdfHttpService
         .uploadPdf(selectedFile, pdfID, this.projectName, numPages.toString())
         .toPromise();
-      console.log('PDF uploaded successfully');
 
       // Update the array of PDFs
       this.updatePDFsArray();
@@ -231,12 +221,15 @@ export class StatikpageComponent implements OnInit {
             subpoints: file.subpoints,
             positionInArray: file.positionInArray,
             numPages: file.numPages,
+            bauteil: file.bauteil,
+            range: { start: 0, end: 0 }, // Initialize range
           };
         })
         .sort(
           (a: { positionInArray: number }, b: { positionInArray: number }) =>
             a.positionInArray - b.positionInArray
         );
+      this.updateRangeValues();
       this.updateNumPages();
     } catch (error) {
       console.error('updatePDFSARRAYERROR', error);
@@ -245,9 +238,7 @@ export class StatikpageComponent implements OnInit {
 
   getPdfbyProject() {
     this.pdfHttpService.getPdfbyProject(this.projectName).subscribe(
-      (response) => {
-        console.log('PDFs of project:', response);
-      },
+      (response) => {},
       (error) => {
         console.error('Error creating PDF:', error);
       }
@@ -257,7 +248,6 @@ export class StatikpageComponent implements OnInit {
   deletePdf(id: string): void {
     this.pdfHttpService.deletePDF(id).subscribe(
       (response) => {
-        console.log('PDF deleted successfully', response);
         this.updatePDFsArray(); // Update the PDFs array after deletion
         // Perform any additional actions after successful deletion
       },
@@ -285,13 +275,10 @@ export class StatikpageComponent implements OnInit {
         response = await this.pdfHttpService
           .createPDF(name, this.projectName, positionInArray, '1')
           .toPromise();
-        console.log('PDF created:', response);
       } else {
         response = await this.pdfHttpService
           .createPDF(name, this.projectName, this.pdfs.length, '1')
           .toPromise();
-
-        console.log('PDF created:', response);
       }
 
       const createdPdf: PDFModel = {
@@ -300,9 +287,12 @@ export class StatikpageComponent implements OnInit {
         filePath: response.filePath,
         projectName: response.projectName,
         positionInArray: response.positionInArray,
+        range: {
+          start: this.totalNumPages,
+          end: this.totalNumPages + response.numPages - 1,
+        },
       };
 
-      console.log(createdPdf);
       await this.updatePDFsArray();
 
       return createdPdf;
@@ -352,6 +342,7 @@ export class StatikpageComponent implements OnInit {
       pdf.positionInArray = index;
     });
     console.log(this.pdfs);
+    this.updateRangeValues();
     this.savePositionsToDatabase();
     this.updateNumPages();
   }
@@ -387,22 +378,42 @@ export class StatikpageComponent implements OnInit {
     this.totalNumPages = this.pdfs.reduce((sum, pdf) => sum + pdf.numPages, 0);
   }
 
-  private calculateCurrentNumPages(pdf: any): number {
-    const previousPdfs = this.pdfs.filter(
-      (p) => p.positionInArray < pdf.positionInArray
-    );
-    return pdf.numPages + previousPdfs.reduce((sum, p) => sum + p.numPages, 0);
-  }
-
-  private updateCurrentNumPages() {
-    this.pdfs.forEach((pdf) => {
-      pdf.numPagesCurrent = this.calculateCurrentNumPages(pdf);
-    });
-  }
-
   // Call this function whenever there's a change in the PDF array
   private updateNumPages() {
     this.calculateTotalNumPages();
-    this.updateCurrentNumPages();
+  }
+
+  private updateRangeValues(): void {
+    let startPage = 1;
+
+    for (const pdf of this.pdfs) {
+      const endPage = startPage + pdf.numPages - 1;
+      pdf.range = { start: startPage, end: endPage };
+      startPage = endPage + 1;
+    }
+  }
+  editBauteil(id: string, currentBauteil?: string): void {
+    const dialogRef = this.dialog.open(BauteildialogComponent, {
+      width: '250px',
+      data: { currentBauteil },
+    });
+
+    dialogRef.afterClosed().subscribe((newBauteil) => {
+      if (newBauteil) {
+        // Call the service to update 'bauteil'
+        this.pdfHttpService.updateBauteil(id, newBauteil).subscribe(
+          (response) => {
+            console.log('Bauteil updated successfully:', response);
+            this.updatePDFsArray();
+            console.log('this.pdfs', this.pdfs);
+            // Handle success if needed
+          },
+          (error) => {
+            console.error('Error updating Bauteil:', error);
+            // Handle error if needed
+          }
+        );
+      }
+    });
   }
 }

@@ -87,4 +87,9 @@ export class PdfHttpService {
     const body = { updatedPdfs };
     return this.http.put(url, body);
   }
+
+  updateBauteil(id: string, bauteil: string): Observable<any> {
+    const updateBauteilEndpoint = `${this.apiUrl}/updateBauteil/${id}`;
+    return this.http.put(updateBauteilEndpoint, { bauteil });
+  }
 }

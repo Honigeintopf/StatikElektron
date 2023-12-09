@@ -210,4 +210,22 @@ router.put("/updatePositions/:projectName", async (req, res) => {
   }
 });
 
+router.put("/updateBauteil/:id", async (req, res) => {
+  try {
+    const pdfId = req.params.id;
+    const { bauteil } = req.body;
+
+    // Update the 'bauteil' field in the database
+    const updatedPdf = await PdfModel.update(
+      { bauteil },
+      { where: { id: pdfId } }
+    );
+
+    res.json(updatedPdf);
+  } catch (error) {
+    console.error("Error updating bauteil:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

@@ -15,6 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { BauteildialogComponent } from './dialog/bauteildialog/bauteildialog.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,7 @@ import { MatInputModule } from '@angular/material/input';
     SidenavComponent,
     StatikpageComponent,
     DashboardComponent,
+    BauteildialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,6 +38,7 @@ import { MatInputModule } from '@angular/material/input';
     HttpClientModule,
     PdfViewerModule,
     MatInputModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

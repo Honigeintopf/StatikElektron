@@ -7,4 +7,5 @@ export interface PDFModel {
   absoluteFilePath?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  range?: { start: number; end: number };
 }

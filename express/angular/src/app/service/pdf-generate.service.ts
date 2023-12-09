@@ -11,9 +11,8 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 export class PdfGenerateService {
   async addHeaderToPdf(
     originalPdfBuffer: ArrayBuffer,
-    project: string,
-    bauteil: string,
-    imageFileName: string
+    pdfs: any[],
+    project: string
   ): Promise<ArrayBuffer> {
     const pdfDoc = await PDFDocument.load(originalPdfBuffer);
     const pages = pdfDoc.getPages();
@@ -26,66 +25,77 @@ export class PdfGenerateService {
 
     // Create a PDFImage object from the image data
     const image = await pdfDoc.embedPng(imageBytes);
+    for (const pdf of pdfs) {
+      const { range, bauteil } = pdf;
 
-    for (const page of pages) {
-      const { width, height } = page.getSize();
-      const headerHeight = 80;
+      if (range && bauteil) {
+        // Find the corresponding page for the given range
+        const startPage = range.start;
+        const endPage = range.end;
 
-      page.drawRectangle({
-        x: 0,
-        y: height - headerHeight,
-        width,
-        height: headerHeight,
-        color: rgb(0.8, 0.8, 0.8),
-      });
+        for (let i = startPage - 1; i < endPage; i++) {
+          const page = pages[i];
 
-      page.drawText(`Projekt: ${project}`, {
-        x: 20,
-        y: height - headerHeight + 15,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
+          if (page) {
+            const { width, height } = page.getSize();
+            const headerHeight = 80;
 
-      page.drawText(`Bauteil: ${bauteil}`, {
-        x: 20,
-        y: height - headerHeight + 30,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
+            page.drawRectangle({
+              x: 0,
+              y: height - headerHeight,
+              width,
+              height: headerHeight,
+              color: rgb(0.8, 0.8, 0.8),
+            });
 
-      const imageWidth = 50;
-      const imageHeight = 50;
-      const imageX = width / 3;
-      const imageY = height - headerHeight + 15;
+            page.drawText(`Projekt: ${project}`, {
+              x: 20,
+              y: height - headerHeight + 15,
+              size: 12,
+              color: rgb(0, 0, 0),
+            });
 
-      // Use the embedded image object in drawImage
-      page.drawImage(image, {
-        x: imageX,
-        y: imageY,
-        width: imageWidth,
-        height: imageHeight,
-      });
+            page.drawText(`Bauteil: ${bauteil}`, {
+              x: 20,
+              y: height - headerHeight + 30,
+              size: 12,
+              color: rgb(0, 0, 0),
+            });
+            const imageWidth = 50;
+            const imageHeight = 50;
+            const imageX = width / 3;
+            const imageY = height - headerHeight + 15;
+            page.drawImage(image, {
+              x: imageX,
+              y: imageY,
+              width: imageWidth,
+              height: imageHeight,
+            });
 
-      const currentDate = new Date().toLocaleDateString();
-      const pageNumber = 1;
+            const currentDate = new Date().toLocaleDateString();
+            const pageNumber = 1;
 
-      page.drawText(`Datum: ${currentDate}`, {
-        x: width - 120,
-        y: height - headerHeight + 15,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
+            page.drawText(`Datum: ${currentDate}`, {
+              x: width - 120,
+              y: height - headerHeight + 15,
+              size: 12,
+              color: rgb(0, 0, 0),
+            });
 
-      page.drawText(`Seite: ${pageNumber}`, {
-        x: width - 120,
-        y: height - headerHeight + 30,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
+            page.drawText(`Seite: ${pageNumber}`, {
+              x: width - 120,
+              y: height - headerHeight + 30,
+              size: 12,
+              color: rgb(0, 0, 0),
+            });
+          }
+        }
+      }
     }
 
     return await pdfDoc.save();
   }
+
   constructor(private pdfHttpService: PdfHttpService) {}
 
   getNumberOfPages(pdfBuffer: ArrayBuffer): Promise<number> {
