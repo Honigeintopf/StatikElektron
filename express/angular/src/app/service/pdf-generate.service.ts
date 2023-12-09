@@ -107,11 +107,7 @@ export class PdfGenerateService {
     });
   }
   async generateTableOfContents(
-    pdfs: {
-      name: string;
-      file?: string;
-      subpoints?: { name: string; file: string }[];
-    }[],
+    pdfs: any[],
     inhaltsverzeichnissPdf: PDFModel,
     deckblattPdf: PDFModel
   ): Promise<void> {
@@ -135,7 +131,12 @@ export class PdfGenerateService {
             },
             {
               width: '*', // Adjust width as needed
-              stack: ['1'], // Hardcoded page number for now
+              stack: pdfs.map((pdf) => {
+                const pageNumberText = pdf.range
+                  ? `${pdf.range.start}-${pdf.range.end}`
+                  : '1'; // Fallback to 1 if range is not specified
+                return pageNumberText;
+              }),
             },
           ],
           columnGap: 20, // Adjust the gap between columns
