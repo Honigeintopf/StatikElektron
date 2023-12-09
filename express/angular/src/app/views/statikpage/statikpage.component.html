@@ -70,12 +70,24 @@
           class="example-list"
           (cdkDropListDropped)="drop($event)"
         >
-          <div class="example-box" *ngFor="let pdf of pdfs" cdkDrag>
+          <div
+            class="example-box justify-content-between"
+            *ngFor="let pdf of pdfs"
+            cdkDrag
+          >
             <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-            <mat-icon>description</mat-icon>
-            <p style="margin-bottom: 0px">
-              {{ pdf.name }} - {{ pdf.range?.start }} to {{ pdf.range?.end }}
-            </p>
+            <div class="d-flex">
+              <mat-icon>description</mat-icon>
+
+              <p style="margin-bottom: 0px; margin-top: 2px">
+                {{ pdf.name }}
+              </p>
+            </div>
+            <div>
+              <p style="margin-bottom: 0px">
+                Seite {{ pdf.range?.start }} bis {{ pdf.range?.end }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -83,45 +95,56 @@
       <div *ngIf="!isDragAndDropEnabled" class="w-100">
         <div class="example-list">
           <div
-            class="example-box"
+            class="example-box justify-content-between"
             *ngFor="let pdf of pdfs"
             [style.color]="getColorForPdf(pdf)"
           >
-            <mat-icon>description</mat-icon>
-            <p style="margin-bottom: 0px">
-              {{ pdf.name }} - {{ pdf.range?.start }} to {{ pdf.range?.end }}
-            </p>
+            <div class="d-flex justify-content-center align-items-center">
+              <mat-icon>description</mat-icon>
+
+              <p style="margin-bottom: 0px">
+                {{ pdf.name }}
+              </p>
+              <div *ngIf="pdf.filePath === null">
+                <button mat-icon-button (click)="fileInput.click()">
+                  <mat-icon>publish</mat-icon>
+                </button>
+                <input
+                  hidden
+                  (change)="onFileSelected($event, pdf.id, false)"
+                  #fileInput
+                  type="file"
+                  accept=".pdf"
+                />
+              </div>
+              <button
+                mat-icon-button
+                (click)="editBauteil(pdf.id, pdf.bauteil)"
+              >
+                <mat-icon>construction</mat-icon>
+              </button>
+              <div *ngIf="pdf.filePath !== null">
+                <button mat-icon-button (click)="fileInput.click()">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <input
+                  hidden
+                  (change)="onFileSelected($event, pdf.id, true)"
+                  #fileInput
+                  type="file"
+                  accept=".pdf"
+                />
+              </div>
+              <button mat-icon-button (click)="deletePdf(pdf.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <div>
+              <p style="margin-bottom: 0px">
+                Seite {{ pdf.range?.start }} bis {{ pdf.range?.end }}
+              </p>
+            </div>
             <!-- Use a button to trigger the file input -->
-            <div *ngIf="pdf.filePath === null">
-              <button mat-icon-button (click)="fileInput.click()">
-                <mat-icon>publish</mat-icon>
-              </button>
-              <input
-                hidden
-                (change)="onFileSelected($event, pdf.id, false)"
-                #fileInput
-                type="file"
-                accept=".pdf"
-              />
-            </div>
-            <button mat-icon-button (click)="editBauteil(pdf.id, pdf.bauteil)">
-              <mat-icon>construction</mat-icon>
-            </button>
-            <div *ngIf="pdf.filePath !== null">
-              <button mat-icon-button (click)="fileInput.click()">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <input
-                hidden
-                (change)="onFileSelected($event, pdf.id, true)"
-                #fileInput
-                type="file"
-                accept=".pdf"
-              />
-            </div>
-            <button mat-icon-button (click)="deletePdf(pdf.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
           </div>
         </div>
       </div>

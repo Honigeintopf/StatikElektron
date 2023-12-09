@@ -394,7 +394,7 @@ export class StatikpageComponent implements OnInit {
   }
   editBauteil(id: string, currentBauteil?: string): void {
     const dialogRef = this.dialog.open(BauteildialogComponent, {
-      width: '250px',
+      width: '350px',
       data: { currentBauteil },
     });
 

@@ -26,10 +26,9 @@ export class PdfGenerateService {
     // Create a PDFImage object from the image data
     const image = await pdfDoc.embedPng(imageBytes);
     for (const pdf of pdfs) {
-      const { range, bauteil } = pdf;
+      const { range, bauteil, name } = pdf;
 
-      if (range && bauteil) {
-        // Find the corresponding page for the given range
+      if (range && name !== 'Deckblatt' && name !== 'Inhaltsverzeichniss') {
         const startPage = range.start;
         const endPage = range.end;
 
@@ -73,7 +72,7 @@ export class PdfGenerateService {
             });
 
             const currentDate = new Date().toLocaleDateString();
-            const pageNumber = 1;
+            const pageNumber = i + 1;
 
             page.drawText(`Datum: ${currentDate}`, {
               x: width - 120,
