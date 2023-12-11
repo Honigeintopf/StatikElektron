@@ -228,4 +228,23 @@ router.put("/updateBauteil/:id", async (req, res) => {
   }
 });
 
+// Update the server-side route
+router.put("/updateName/:id", async (req, res) => {
+  try {
+    const pdfId = req.params.id;
+    const { newName } = req.body;
+
+    // Update the 'name' field in the database
+    const updatedPdf = await PdfModel.update(
+      { name: newName },
+      { where: { id: pdfId } }
+    );
+
+    res.json(updatedPdf);
+  } catch (error) {
+    console.error("Error updating PDF name:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

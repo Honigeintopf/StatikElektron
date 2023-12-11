@@ -21,8 +21,9 @@ export class StatikpageComponent implements OnInit {
     numPages: number;
     filePath?: string;
     subpoints?: { name: string; file: string }[];
-    bauteil?: string; // Add this field with nullable type
+    bauteil?: string;
     range?: { start: number; end: number };
+    isEditing?: boolean; // Add this property to the type definition
   }[] = [];
 
   totalNumPages: number = 0;
@@ -31,6 +32,7 @@ export class StatikpageComponent implements OnInit {
   projectName: string = 'Statik1';
   hasSpecialCharacters: boolean = false;
   srcTest = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
+  editedName: string = '';
 
   constructor(
     private pdfHttpService: PdfHttpService,
@@ -415,5 +417,27 @@ export class StatikpageComponent implements OnInit {
         );
       }
     });
+  }
+
+  toggleEdit(pdf: any): void {
+    if (pdf.isEditing) {
+      // Save the edited name and update the PDF
+      this.pdfHttpService.updatePdfName(pdf.id, this.editedName).subscribe(
+        (response) => {
+          console.log('PDF name updated successfully:', response);
+          this.updatePDFsArray();
+          pdf.isEditing = false; // Exit editing mode
+        },
+        (error) => {
+          console.error('Error updating PDF name:', error);
+          // Handle error if needed
+        }
+      );
+    } else {
+      // Enter editing mode
+      this.editedName = pdf.name;
+    }
+
+    pdf.isEditing = !pdf.isEditing; // Toggle editing mode
   }
 }

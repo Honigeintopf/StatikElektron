@@ -102,9 +102,18 @@
             <div class="d-flex justify-content-center align-items-center">
               <mat-icon>description</mat-icon>
 
-              <p style="margin-bottom: 0px">
+              <!-- Display the PDF name -->
+              <p style="margin-bottom: 0px" *ngIf="!pdf.isEditing">
                 {{ pdf.name }}
               </p>
+
+              <!-- Input field for editing the PDF name -->
+              <input
+                *ngIf="pdf.isEditing"
+                [(ngModel)]="editedName"
+                placeholder="Enter new name"
+              />
+
               <div *ngIf="pdf.filePath === null">
                 <button mat-icon-button (click)="fileInput.click()">
                   <mat-icon>publish</mat-icon>
@@ -117,28 +126,19 @@
                   accept=".pdf"
                 />
               </div>
-              <button
-                mat-icon-button
-                (click)="editBauteil(pdf.id, pdf.bauteil)"
-              >
-                <mat-icon>construction</mat-icon>
+
+              <!-- Button to toggle editing mode -->
+              <button mat-icon-button (click)="toggleEdit(pdf)">
+                <mat-icon>{{ pdf.isEditing ? "done" : "edit" }}</mat-icon>
               </button>
-              <div *ngIf="pdf.filePath !== null">
-                <button mat-icon-button (click)="fileInput.click()">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <input
-                  hidden
-                  (change)="onFileSelected($event, pdf.id, true)"
-                  #fileInput
-                  type="file"
-                  accept=".pdf"
-                />
-              </div>
+
+              <!-- Other buttons (editBauteil, delete) -->
+
               <button mat-icon-button (click)="deletePdf(pdf.id)">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
+
             <div>
               <p style="margin-bottom: 0px">
                 Seite {{ pdf.range?.start }} bis {{ pdf.range?.end }}
@@ -148,6 +148,7 @@
           </div>
         </div>
       </div>
+
       <div *ngIf="hasSpecialCharacters">
         <p style="color: red">PDF hat spezielle Charakter ä,ö,ü.</p>
       </div>

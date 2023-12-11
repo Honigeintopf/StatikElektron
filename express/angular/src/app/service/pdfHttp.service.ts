@@ -92,4 +92,9 @@ export class PdfHttpService {
     const updateBauteilEndpoint = `${this.apiUrl}/updateBauteil/${id}`;
     return this.http.put(updateBauteilEndpoint, { bauteil });
   }
+
+  updatePdfName(id: string, newName: string): Observable<any> {
+    const updateNameEndpoint = `${this.apiUrl}/updateName/${id}`;
+    return this.http.put(updateNameEndpoint, { newName });
+  }
 }
