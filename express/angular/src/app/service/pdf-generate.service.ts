@@ -56,14 +56,21 @@ export class PdfGenerateService {
               color: rgb(0, 0, 0),
             });
 
-            if (bauteil !== null) {
-              page.drawText(`Bauteil: ${bauteil}`, {
-                x: 20,
-                y: height - headerHeight + 30,
-                size: 12,
-                color: rgb(0, 0, 0),
-              });
-            }
+            // if (bauteil !== null) {
+            //   page.drawText(`Bauteil: ${bauteil}`, {
+            //     x: 20,
+            //     y: height - headerHeight + 30,
+            //     size: 12,
+            //     color: rgb(0, 0, 0),
+            //   });
+            // }
+            page.drawText(`Name: ${name}`, {
+              x: 20,
+              y: height - headerHeight + 30,
+              size: 12,
+              color: rgb(0, 0, 0),
+            });
+
             const imageWidth = 50;
             const imageHeight = 50;
             const imageX = (width - imageWidth) / 2;

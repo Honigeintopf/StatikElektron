@@ -149,7 +149,7 @@
     <div
       class="col-6 d-flex flex-column justify-content-center align-items-center border"
     >
-      <div *ngIf="selectedPdf && selectedPdf.filePath !== null">
+      <div *ngIf="selectedPdf">
         <div class="row my-5">
           <div class="col">
             <p style="margin-bottom: 0px; margin-left: 13px">
@@ -173,7 +173,7 @@
         </div>
       </div>
 
-      <div *ngIf="!selectedPdf && selectedPdf.filePath === null">
+      <div *ngIf="!selectedPdf">
         <h1>Keine PDF ausgewählt</h1>
         <!-- You can add a message or any other content here -->
       </div>
