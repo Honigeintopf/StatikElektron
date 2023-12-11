@@ -50,17 +50,7 @@
       class="col-6 d-flex justify-content-start align-items-center flex-column border"
     >
       <div class="row d-flex w-100 mt-5 border-bottom align-items-center">
-        <mat-form-field style="max-width: 400px">
-          <mat-label>Neue PDF</mat-label
-          ><input
-            matInput
-            type="text"
-            id="pdfName"
-            [(ngModel)]="newPdfName"
-            style="max-width: 50%"
-        /></mat-form-field>
-
-        <button mat-icon-button (click)="addPdf(newPdfName)" class="mb-3">
+        <button mat-icon-button (click)="addPdf('Ohne Namen')" class="mb-3">
           <mat-icon>add</mat-icon>
         </button>
       </div>
@@ -98,6 +88,8 @@
             class="example-box justify-content-between"
             *ngFor="let pdf of pdfs"
             [style.color]="getColorForPdf(pdf)"
+            (click)="selectPdf(pdf)"
+            [class.selected]="pdf === selectedPdf"
           >
             <div class="d-flex justify-content-center align-items-center">
               <mat-icon>description</mat-icon>
@@ -157,30 +149,33 @@
     <div
       class="col-6 d-flex flex-column justify-content-center align-items-center border"
     >
-      <div *ngFor="let pdf of pdfs; let i = index">
-        <ng-container *ngIf="pdf.filePath !== null">
-          <!-- New row for each pdf-viewer -->
-          <div class="row my-5">
-            <div class="col">
-              <p style="margin-bottom: 0px; margin-left: 13px">
-                Seite {{ i + 1 }} von {{ pdfs.length }} -
-                <span style="color: grey">{{ pdf.name }}</span>
-              </p>
-            </div>
+      <div *ngIf="selectedPdf && selectedPdf.filePath !== null">
+        <div class="row my-5">
+          <div class="col">
+            <p style="margin-bottom: 0px; margin-left: 13px">
+              Seite {{ selectedPdf.range?.start }} von
+              {{ selectedPdf.range?.end }} -
+              <span style="color: grey">{{ selectedPdf.name }}</span>
+            </p>
           </div>
+        </div>
 
-          <div class="row">
-            <div class="col">
-              <pdf-viewer
-                [src]="pdf.filePath"
-                [render-text]="true"
-                [original-size]="false"
-                style="width: 400px; height: 500px"
-                [show-borders]="true"
-              ></pdf-viewer>
-            </div>
+        <div class="row">
+          <div class="col">
+            <pdf-viewer
+              [src]="selectedPdf.filePath"
+              [render-text]="true"
+              [original-size]="false"
+              style="width: 400px; height: 500px"
+              [show-borders]="true"
+            ></pdf-viewer>
           </div>
-        </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="!selectedPdf && selectedPdf.filePath === null">
+        <h1>Keine PDF ausgewählt</h1>
+        <!-- You can add a message or any other content here -->
       </div>
     </div>
   </div>

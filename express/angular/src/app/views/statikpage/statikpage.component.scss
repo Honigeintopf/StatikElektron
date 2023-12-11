@@ -89,3 +89,8 @@ button[mat-icon-button] {
     }
   }
 }
+.selected {
+  background-color: #e0e0e0; /* Change the background color as per your design */
+  border: 1px solid #000; /* Add a border for visual distinction */
+  /* Add any other styles for the selected state */
+}

@@ -25,7 +25,6 @@ export class StatikpageComponent implements OnInit {
     range?: { start: number; end: number };
     isEditing?: boolean; // Add this property to the type definition
   }[] = [];
-
   totalNumPages: number = 0;
   isDragAndDropEnabled: boolean = true;
   selectedFiles: { [pdfId: string]: File } = {};
@@ -33,6 +32,7 @@ export class StatikpageComponent implements OnInit {
   hasSpecialCharacters: boolean = false;
   srcTest = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   editedName: string = '';
+  selectedPdf: any;
 
   constructor(
     private pdfHttpService: PdfHttpService,
@@ -278,8 +278,9 @@ export class StatikpageComponent implements OnInit {
           .createPDF(name, this.projectName, positionInArray, '1')
           .toPromise();
       } else {
+        const Genname = `${name} ${this.pdfs.length + 1}`;
         response = await this.pdfHttpService
-          .createPDF(name, this.projectName, this.pdfs.length, '1')
+          .createPDF(Genname, this.projectName, this.pdfs.length, '1')
           .toPromise();
       }
 
@@ -439,5 +440,9 @@ export class StatikpageComponent implements OnInit {
     }
 
     pdf.isEditing = !pdf.isEditing; // Toggle editing mode
+  }
+
+  selectPdf(pdf: any): void {
+    this.selectedPdf = pdf;
   }
 }
