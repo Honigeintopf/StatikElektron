@@ -33,7 +33,8 @@ export class StatikpageComponent implements OnInit {
   srcTest = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   editedName: string = '';
   selectedPdf: any;
-
+  selectedPdfId: string = '';
+  selectedPdfFilePath!: string;
   constructor(
     private pdfHttpService: PdfHttpService,
     private pdfService: PdfGenerateService,
@@ -202,7 +203,14 @@ export class StatikpageComponent implements OnInit {
         .toPromise();
 
       // Update the array of PDFs
-      this.updatePDFsArray();
+      await this.updatePDFsArray();
+
+      const uploadedPdf = this.pdfs.find((pdf) => pdf.id === pdfID);
+
+      if (uploadedPdf) {
+        // Select the newly uploaded PDF
+        this.selectPdf(uploadedPdf);
+      }
     } catch (error) {
       console.error('Error uploading PDF:', error);
     }
@@ -444,5 +452,7 @@ export class StatikpageComponent implements OnInit {
 
   selectPdf(pdf: any): void {
     this.selectedPdf = pdf;
+    this.selectedPdfId = pdf.id;
+    this.selectedPdfFilePath = pdf.filePath;
   }
 }

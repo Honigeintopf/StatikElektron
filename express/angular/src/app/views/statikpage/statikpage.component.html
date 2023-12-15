@@ -14,6 +14,21 @@
     <div class="row">
       <p style="margin-bottom: 0px"><mat-icon>crop_free</mat-icon>Seiten</p>
     </div>
+
+    <div class="row">
+      <div *ngIf="this.selectedPdfFilePath === null">
+        <button mat-icon-button (click)="fileInput.click()">
+          <mat-icon>publish</mat-icon>
+        </button>
+        <input
+          hidden
+          (change)="onFileSelected($event, this.selectedPdfId, false)"
+          #fileInput
+          type="file"
+          accept=".pdf"
+        />
+      </div>
+    </div>
   </div>
 </div>
 <div
@@ -105,19 +120,6 @@
                 [(ngModel)]="editedName"
                 placeholder="Enter new name"
               />
-
-              <div *ngIf="pdf.filePath === null">
-                <button mat-icon-button (click)="fileInput.click()">
-                  <mat-icon>publish</mat-icon>
-                </button>
-                <input
-                  hidden
-                  (change)="onFileSelected($event, pdf.id, false)"
-                  #fileInput
-                  type="file"
-                  accept=".pdf"
-                />
-              </div>
 
               <!-- Button to toggle editing mode -->
               <button mat-icon-button (click)="toggleEdit(pdf)">
